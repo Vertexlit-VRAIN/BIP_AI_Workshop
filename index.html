@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Wars — AI Workshop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-deep: #0a0a14;
+      --bg-card: rgba(10, 10, 30, 0.85);
+      --bg-card-solid: #111128;
+      --border-pixel: #2a2a4a;
+      --text-primary: #e0e8ff;
+      --text-secondary: #6a7098;
+      --neon-cyan: #00ffff;
+      --neon-magenta: #ff00ff;
+      --neon-yellow: #ffff00;
+      --neon-green: #39ff14;
+      --neon-orange: #ff8c00;
+      --neon-red: #ff3333;
+      --glow-cyan: rgba(0, 255, 255, 0.4);
+      --glow-magenta: rgba(255, 0, 255, 0.3);
+      --glow-yellow: rgba(255, 255, 0, 0.3);
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-body: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+    }
+
+    /* CRT SCANLINE OVERLAY */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg,
+          rgba(0, 0, 0, 0.06) 0px,
+          rgba(0, 0, 0, 0.06) 1px,
+          transparent 1px,
+          transparent 3px);
+    }
+
+    /* BACKGROUND */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Pixel grid */
+    .bg-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Neon glow spots */
+    .glow-spot {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.12;
+      will-change: transform;
+    }
+
+    .glow-1 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--neon-cyan), transparent 70%);
+      top: -10%;
+      right: -5%;
+      animation: float1 20s ease-in-out infinite alternate;
+    }
+
+    .glow-2 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--neon-magenta), transparent 70%);
+      bottom: -8%;
+      left: -3%;
+      animation: float2 24s ease-in-out infinite alternate;
+    }
+
+    @keyframes float1 {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(-50px, 40px);
+      }
+    }
+
+    @keyframes float2 {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(40px, -30px);
+      }
+    }
+
+    /* PAGE */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 6vh 4vw 8vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* TITLE */
+    .title-wrap {
+      text-align: center;
+      margin-bottom: 2vh;
+    }
+
+    .logo-label {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.5rem, 0.9vw, 0.65rem);
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      color: var(--neon-cyan);
+      margin-bottom: 2vh;
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .main-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      line-height: 1.3;
+      color: var(--neon-cyan);
+      text-shadow:
+        0 0 10px var(--glow-cyan),
+        0 0 40px var(--glow-cyan),
+        0 0 80px rgba(0, 255, 255, 0.15);
+      animation: title-flicker 4s ease-in-out infinite;
+    }
+
+    @keyframes title-flicker {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      92% {
+        opacity: 1;
+      }
+
+      93% {
+        opacity: 0.8;
+      }
+
+      94% {
+        opacity: 1;
+      }
+
+      96% {
+        opacity: 0.9;
+      }
+
+      97% {
+        opacity: 1;
+      }
+    }
+
+    .tagline {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.45rem, 0.8vw, 0.6rem);
+      color: var(--neon-magenta);
+      margin-top: 2.5vh;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 8px var(--glow-magenta);
+    }
+
+    /* COIN INSERT */
+    .coin-insert {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.4rem, 0.65vw, 0.5rem);
+      color: var(--neon-yellow);
+      text-shadow: 0 0 8px var(--glow-yellow);
+      margin-top: 3vh;
+      animation: blink 1.2s step-end infinite;
+      letter-spacing: 0.1em;
+    }
+
+    @keyframes blink {
+
+      0%,
+      49% {
+        opacity: 1;
+      }
+
+      50%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    /* DIVIDER */
+    .divider {
+      width: 100%;
+      max-width: 600px;
+      height: 2px;
+      margin: 4vh 0;
+      background: linear-gradient(90deg, transparent 5%, var(--border-pixel) 20%, var(--neon-cyan) 50%, var(--border-pixel) 80%, transparent 95%);
+      border: none;
+      box-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
+    }
+
+    /* SESSION CARDS */
+    .sessions {
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+      width: 100%;
+    }
+
+    .session-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 2vw;
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2vw, 1.8rem);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .session-card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px -3px var(--glow-cyan), inset 0 0 15px -8px var(--glow-cyan);
+    }
+
+    .card-num {
+      width: clamp(44px, 5vw, 56px);
+      height: clamp(44px, 5vw, 56px);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-pixel);
+      font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+      flex-shrink: 0;
+    }
+
+    .card-num-1 {
+      background: rgba(0, 255, 255, 0.06);
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px var(--glow-cyan);
+    }
+
+    .card-num-2 {
+      background: rgba(255, 140, 0, 0.06);
+      border: 2px solid rgba(255, 140, 0, 0.3);
+      color: var(--neon-orange);
+      text-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
+    }
+
+    .card-num-3 {
+      background: rgba(255, 0, 255, 0.06);
+      border: 2px solid rgba(255, 0, 255, 0.3);
+      color: var(--neon-magenta);
+      text-shadow: 0 0 8px var(--glow-magenta);
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4em;
+    }
+
+    .card-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.55rem, 1vw, 0.75rem);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .card-desc {
+      font-size: clamp(0.8rem, 1.1vw, 0.92rem);
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .card-meta {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.35rem, 0.55vw, 0.42rem);
+      color: var(--neon-green);
+      text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+      margin-top: 0.3em;
+      letter-spacing: 0.05em;
+    }
+
+    .card-arrow {
+      font-family: var(--font-pixel);
+      font-size: 1rem;
+      color: var(--border-pixel);
+      transition: color 0.2s, text-shadow 0.2s;
+      flex-shrink: 0;
+    }
+
+    .session-card:hover .card-arrow {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    /* MATERIALS SECTION */
+    .materials-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.5rem, 0.85vw, 0.65rem);
+      color: var(--text-primary);
+      margin-bottom: 2vh;
+      text-align: center;
+      letter-spacing: 0.1em;
+    }
+
+    .materials {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5vh;
+      width: 100%;
+      max-width: 550px;
+    }
+
+    .mat-card {
+      display: flex;
+      align-items: center;
+      gap: 0.8em;
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      padding: 0.9em 1.2em;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .mat-card:hover {
+      border-color: var(--neon-yellow);
+      box-shadow: 0 0 10px -3px var(--glow-yellow);
+    }
+
+    .mat-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .mat-label {
+      font-size: clamp(0.78rem, 1vw, 0.88rem);
+      color: var(--text-secondary);
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 5vh;
+      font-family: var(--font-pixel);
+      font-size: clamp(0.3rem, 0.5vw, 0.38rem);
+      color: rgba(255, 255, 255, 0.2);
+      text-align: center;
+      line-height: 2.2;
+      letter-spacing: 0.05em;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .session-card {
+        grid-template-columns: auto 1fr;
+        gap: 3vw;
+      }
+
+      .card-arrow {
+        display: none;
+      }
+
+      .materials {
+        grid-template-columns: 1fr;
+      }
+
+      .glow-1 {
+        width: 200px;
+        height: 200px;
+      }
+
+      .glow-2 {
+        width: 180px;
+        height: 180px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page {
+        padding: 4vh 5vw 6vh;
+      }
+
+      .card-num {
+        width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+      }
+
+      .session-card {
+        padding: 0.9rem 1rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ===========================
+       8-BIT PIXEL EFFECTS
+       =========================== */
+    .pixel-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .pxl {
+      position: absolute;
+      bottom: -10px;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: pxl-rise linear infinite;
+    }
+
+    @keyframes pxl-rise {
+      0% {
+        opacity: 0;
+        transform: translateY(0);
+      }
+
+      10% {
+        opacity: 0.6;
+      }
+
+      90% {
+        opacity: 0.2;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-105vh);
+      }
+    }
+
+    .pixel-star {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: star-twinkle ease-in-out infinite;
+    }
+
+    .pixel-star::before,
+    .pixel-star::after {
+      content: '';
+      position: absolute;
+      background: currentColor;
+      box-shadow: 0 0 4px currentColor;
+    }
+
+    .pixel-star::before {
+      width: 2px;
+      height: 8px;
+      left: 2px;
+      top: -1px;
+    }
+
+    .pixel-star::after {
+      width: 8px;
+      height: 2px;
+      left: -1px;
+      top: 2px;
+    }
+
+    @keyframes star-twinkle {
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(0deg);
+      }
+
+      50% {
+        opacity: 0.45;
+        transform: scale(1) rotate(45deg);
+      }
+    }
+
+    /* Pixel art space invader */
+    .pixel-invader {
+      position: fixed;
+      bottom: 10%;
+      right: 5%;
+      width: 4px;
+      height: 4px;
+      background: transparent;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.07;
+      animation: invader-bob 4s ease-in-out infinite;
+      box-shadow:
+        8px 0 0 0 var(--neon-cyan), 32px 0 0 0 var(--neon-cyan),
+        12px 4px 0 0 var(--neon-cyan), 28px 4px 0 0 var(--neon-cyan),
+        8px 8px 0 0 var(--neon-cyan), 12px 8px 0 0 var(--neon-cyan), 16px 8px 0 0 var(--neon-cyan), 20px 8px 0 0 var(--neon-cyan), 24px 8px 0 0 var(--neon-cyan), 28px 8px 0 0 var(--neon-cyan), 32px 8px 0 0 var(--neon-cyan),
+        4px 12px 0 0 var(--neon-cyan), 8px 12px 0 0 var(--neon-cyan), 12px 12px 0 0 var(--neon-cyan), 16px 12px 0 0 var(--neon-cyan), 20px 12px 0 0 var(--neon-cyan), 24px 12px 0 0 var(--neon-cyan), 28px 12px 0 0 var(--neon-cyan), 32px 12px 0 0 var(--neon-cyan), 36px 12px 0 0 var(--neon-cyan),
+        0 16px 0 0 var(--neon-cyan), 4px 16px 0 0 var(--neon-cyan), 8px 16px 0 0 var(--neon-cyan), 12px 16px 0 0 var(--neon-cyan), 16px 16px 0 0 var(--neon-cyan), 20px 16px 0 0 var(--neon-cyan), 24px 16px 0 0 var(--neon-cyan), 28px 16px 0 0 var(--neon-cyan), 32px 16px 0 0 var(--neon-cyan), 36px 16px 0 0 var(--neon-cyan), 40px 16px 0 0 var(--neon-cyan),
+        0 20px 0 0 var(--neon-cyan), 8px 20px 0 0 var(--neon-cyan), 32px 20px 0 0 var(--neon-cyan), 40px 20px 0 0 var(--neon-cyan),
+        12px 24px 0 0 var(--neon-cyan), 16px 24px 0 0 var(--neon-cyan), 24px 24px 0 0 var(--neon-cyan), 28px 24px 0 0 var(--neon-cyan);
+    }
+
+    @keyframes invader-bob {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    /* Pixel art ghost (left side) */
+    .pixel-ghost {
+      position: fixed;
+      bottom: 14%;
+      left: 5%;
+      width: 4px;
+      height: 4px;
+      background: transparent;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.06;
+      animation: ghost-float 5s ease-in-out infinite;
+      box-shadow:
+        8px 0 0 0 var(--neon-magenta), 12px 0 0 0 var(--neon-magenta), 16px 0 0 0 var(--neon-magenta),
+        4px 4px 0 0 var(--neon-magenta), 8px 4px 0 0 var(--neon-magenta), 12px 4px 0 0 var(--neon-magenta), 16px 4px 0 0 var(--neon-magenta), 20px 4px 0 0 var(--neon-magenta),
+        4px 8px 0 0 var(--neon-magenta), 8px 8px 0 0 #0a0a14, 12px 8px 0 0 var(--neon-magenta), 16px 8px 0 0 #0a0a14, 20px 8px 0 0 var(--neon-magenta),
+        4px 12px 0 0 var(--neon-magenta), 8px 12px 0 0 var(--neon-magenta), 12px 12px 0 0 var(--neon-magenta), 16px 12px 0 0 var(--neon-magenta), 20px 12px 0 0 var(--neon-magenta),
+        4px 16px 0 0 var(--neon-magenta), 8px 16px 0 0 var(--neon-magenta), 12px 16px 0 0 var(--neon-magenta), 16px 16px 0 0 var(--neon-magenta), 20px 16px 0 0 var(--neon-magenta),
+        4px 20px 0 0 var(--neon-magenta), 12px 20px 0 0 var(--neon-magenta), 20px 20px 0 0 var(--neon-magenta);
+    }
+
+    @keyframes ghost-float {
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(4px, -6px);
+      }
+
+      75% {
+        transform: translate(-4px, -3px);
+      }
+    }
+
+    /* ===========================
+     GLITCH TEXT EFFECT
+     =========================== */
+    .glitch-text {
+      position: relative;
+      display: inline-block;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .glitch-text::before {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px var(--neon-cyan);
+      z-index: -1;
+      animation: glitch-1 3.5s infinite linear;
+    }
+
+    .glitch-text::after {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 8px var(--neon-magenta);
+      z-index: -1;
+      animation: glitch-2 3.5s infinite linear;
+    }
+
+    @keyframes glitch-1 {
+      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      5%        { clip-path: inset(0% 0 65% 0);  transform: translate(-8px, 3px); }
+      7%        { clip-path: inset(30% 0 20% 0);  transform: translate(10px, -2px); }
+      9%        { clip-path: inset(60% 0 0% 0);  transform: translate(-6px, 4px); }
+      11%       { clip-path: inset(10% 0 40% 0);  transform: translate(7px, -3px); }
+      13%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      60%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      62%       { clip-path: inset(0% 0 45% 0);  transform: translate(9px, 2px); }
+      64%       { clip-path: inset(50% 0 5% 0);  transform: translate(-10px, -3px); }
+      65%       { clip-path: inset(15% 0 30% 0);  transform: translate(6px, 4px); }
+      67%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+    }
+
+    @keyframes glitch-2 {
+      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      4%        { clip-path: inset(55% 0 0% 0);  transform: translate(10px, -4px); }
+      6%        { clip-path: inset(0% 0 40% 0);  transform: translate(-8px, 3px); }
+      8%        { clip-path: inset(20% 0 30% 0);  transform: translate(12px, 2px); }
+      10%       { clip-path: inset(45% 0 10% 0);  transform: translate(-7px, -3px); }
+      12%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      58%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      60%       { clip-path: inset(35% 0 10% 0);  transform: translate(-11px, 3px); }
+      62%       { clip-path: inset(5% 0 50% 0);  transform: translate(8px, -4px); }
+      64%       { clip-path: inset(40% 0 0% 0);  transform: translate(-9px, 2px); }
+      66%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="bg-layer" aria-hidden="true">
+    <div class="glow-spot glow-1"></div>
+    <div class="glow-spot glow-2"></div>
+  </div>
+
+  <div class="page">
+
+    <div class="title-wrap">
+      <div class="logo-label">// AI Workshop</div>
+      <div class="main-title">PROMPT WARS</div>
+      <div class="tagline">Detect it. Direct it. Break it.</div>
+      <div class="coin-insert">SELECT MISSION TO BEGIN</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="sessions">
+      <a class="session-card" href="slides/part1_icebreaker.html">
+        <div class="card-num card-num-1">01</div>
+        <div class="card-body">
+          <div class="card-title">AI or Human?</div>
+          <div class="card-desc">Can you tell AI content from the real thing? Five pairs, five votes, five reveals.
+          </div>
+          <div class="card-meta">Icebreaker</div>
+        </div>
+        <div class="card-arrow">&#9654;</div>
+      </a>
+
+      <a class="session-card" href="slides/part2_challenge.html">
+        <div class="card-num card-num-2">02</div>
+        <div class="card-body">
+          <div class="card-title">Prompt Engineering Challenge</div>
+          <div class="card-desc">Three rounds of team challenges. Write prompts, combine expertise, and try to break the
+            AI.</div>
+          <div class="card-meta">3 Rounds</div>
+        </div>
+        <div class="card-arrow">&#9654;</div>
+      </a>
+
+      <a class="session-card" href="slides/part3_wrapup.html">
+        <div class="card-num card-num-3">03</div>
+        <div class="card-body">
+          <div class="card-title">Wrap-up</div>
+          <div class="card-desc">Final poll, three takeaways, and the winning team announcement.</div>
+          <div class="card-meta">Closing</div>
+        </div>
+        <div class="card-arrow">&#9654;</div>
+      </a>
+    </div>
+
+    <hr class="divider">
+
+    <!--
+    <div class="materials-title">// Printable Materials (PDF)</div>
+    <div class="materials">
+      <a class="mat-card" href="docs/Part2_Student_Handout.pdf" target="_blank">
+        <div class="mat-icon">📄</div>
+        <div class="mat-label">Student Handout<br><span style="font-size:0.8em; opacity:0.5;">PDF / print-ready</span>
+        </div>
+      </a>
+      <a class="mat-card" href="docs/Part2_Scoring_Sheet.pdf" target="_blank">
+        <div class="mat-icon">📊</div>
+        <div class="mat-label">Scoring Sheet<br><span style="font-size:0.8em; opacity:0.5;">PDF / print-ready</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="materials-title" style="margin-top:2vh;">// Editable Materials (Word)</div>
+    <div class="materials">
+      <a class="mat-card" href="docs/Part2_Student_Handout.docx" target="_blank">
+        <div class="mat-icon">📝</div>
+        <div class="mat-label">Student Handout<br><span style="font-size:0.8em; opacity:0.5;">Word / editable</span>
+        </div>
+      </a>
+      <a class="mat-card" href="docs/Part2_Scoring_Sheet.docx" target="_blank">
+        <div class="mat-icon">📝</div>
+        <div class="mat-label">Scoring Sheet<br><span style="font-size:0.8em; opacity:0.5;">Word / editable</span></div>
+      </a>
+    </div>
+    -->
+
+    <div class="footer">
+      Prompt Wars // BIP AI Workshop
+      <br>
+      All files work offline. No internet required.
+    </div>
+
+  </div>
+
+  <div class="pixel-invader" aria-hidden="true"></div>
+  <div class="pixel-ghost" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      /* Floating pixel particles */
+      var c = document.createElement('div');
+      c.className = 'pixel-particles';
+      c.setAttribute('aria-hidden', 'true');
+      var colors = ['#00ffff', '#ff00ff', '#ffff00', '#39ff14'];
+      for (var i = 0; i < 12; i++) {
+        var p = document.createElement('div');
+        p.className = 'pxl';
+        var s = 2 + Math.floor(Math.random() * 3);
+        p.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (Math.random() * 100).toFixed(1) + '%;background:' + colors[i % 4] + ';box-shadow:0 0 ' + (s + 2) + 'px ' + colors[i % 4] + ';animation-duration:' + (14 + Math.random() * 16).toFixed(1) + 's;animation-delay:' + (Math.random() * 12).toFixed(1) + 's;';
+        c.appendChild(p);
+      }
+      document.body.appendChild(c);
+      /* Twinkling pixel cross-stars */
+      var sc = ['#00ffff', '#ff00ff', '#ffff00'];
+      for (var j = 0; j < 5; j++) {
+        var st = document.createElement('div');
+        st.className = 'pixel-star';
+        st.setAttribute('aria-hidden', 'true');
+        st.style.cssText = 'color:' + sc[j % 3] + ';left:' + (8 + Math.random() * 84).toFixed(1) + '%;top:' + (8 + Math.random() * 78).toFixed(1) + '%;animation-duration:' + (2.5 + Math.random() * 3).toFixed(1) + 's;animation-delay:' + (Math.random() * 4).toFixed(1) + 's;';
+        document.body.appendChild(st);
+      }
+    })();
+  </script>
+
+  <script>
+    /* Auto-apply glitch effect to headings */
+    (function () {
+      document.querySelectorAll('h1, .intro-category, .big-question .lead').forEach(function (el) {
+        el.classList.add('glitch-text');
+        el.setAttribute('data-text', el.textContent);
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

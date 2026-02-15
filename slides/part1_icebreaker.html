@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Wars — Part 1: AI or Human?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-deep: #0a0a14;
+      --bg-card: rgba(10, 10, 30, 0.85);
+      --bg-card-solid: #111128;
+      --border-pixel: #2a2a4a;
+      --text-primary: #e0e8ff;
+      --text-secondary: #6a7098;
+      --neon-cyan: #00ffff;
+      --neon-magenta: #ff00ff;
+      --neon-yellow: #ffff00;
+      --neon-green: #39ff14;
+      --neon-orange: #ff8c00;
+      --neon-red: #ff3333;
+      --glow-cyan: rgba(0, 255, 255, 0.4);
+      --glow-magenta: rgba(255, 0, 255, 0.3);
+      --glow-yellow: rgba(255, 255, 0, 0.3);
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-body: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+    }
+
+    /* ===========================
+     CRT OVERLAY
+     =========================== */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.06) 0px, rgba(0, 0, 0, 0.06) 1px, transparent 1px, transparent 3px);
+    }
+
+    /* ===========================
+     ANIMATED BACKGROUND LAYERS
+     =========================== */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Slow-moving gradient wash */
+    .bg-layer::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 25% 30%, rgba(0, 255, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 70%, rgba(255, 0, 255, 0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 255, 0.04) 0%, transparent 60%);
+      animation: bg-drift 25s ease-in-out infinite alternate;
+    }
+
+    @keyframes bg-drift {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-5%, 3%) rotate(3deg);
+      }
+    }
+
+    /* Subtle grid overlay */
+    .bg-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    }
+
+    /* Glow spots (arcade style) */
+    .glow-spot {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.18;
+      will-change: transform;
+    }
+
+    .glow-1 {
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, var(--neon-cyan), transparent 70%);
+      top: -10%;
+      left: -8%;
+      animation: orb-float-1 20s ease-in-out infinite alternate;
+    }
+
+    .glow-2 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, var(--neon-magenta), transparent 70%);
+      bottom: -8%;
+      right: -5%;
+      animation: orb-float-2 24s ease-in-out infinite alternate;
+    }
+
+    @keyframes orb-float-1 {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(80px, 60px);
+      }
+    }
+
+    @keyframes orb-float-2 {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(-70px, -50px);
+      }
+    }
+
+    /* ===========================
+     SLIDE ENGINE
+     =========================== */
+    .deck {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3.5vh 4vw 56px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      animation: scan-in 0.55s steps(10, end) both;
+    }
+
+    /* ===========================
+     TYPOGRAPHY
+     =========================== */
+    h1 {
+      font-size: clamp(1.4rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      font-family: var(--font-pixel);
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px var(--glow-cyan), 0 0 40px rgba(0, 255, 255, 0.3);
+    }
+
+    h2 {
+      font-size: clamp(0.7rem, 1.5vw, 1.1rem);
+      font-weight: 700;
+      line-height: 1.6;
+      font-family: var(--font-pixel);
+      color: var(--text-primary);
+    }
+
+    h3 {
+      font-size: clamp(1.05rem, 1.8vw, 1.4rem);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 1.8vw, 1.35rem);
+      color: var(--text-secondary);
+      margin-top: 0.8em;
+      max-width: 620px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .small {
+      font-size: clamp(0.82rem, 1.2vw, 1rem);
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    kbd {
+      background: var(--bg-card-solid);
+      padding: 0.15em 0.55em;
+      border-radius: 2px;
+      font-size: 0.92em;
+      border: 2px solid var(--border-pixel);
+      font-family: var(--font-pixel);
+    }
+
+    /* ===========================
+     PAIR LABEL (pixel badge)
+     =========================== */
+    .pair-label {
+      font-size: clamp(0.5rem, 0.8vw, 0.7rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--neon-cyan);
+      background: rgba(0, 255, 255, 0.08);
+      border: 2px solid var(--border-pixel);
+      padding: 0.3em 1.2em;
+      border-radius: 4px;
+      margin-bottom: 1.2vh;
+      font-family: var(--font-pixel);
+    }
+
+    /* ===========================
+     PIXEL-STYLE CARDS
+     =========================== */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.2vw;
+      width: 100%;
+      max-width: 1400px;
+      margin-top: 2vh;
+    }
+
+    .option-card {
+      background: var(--bg-card);
+      border-radius: 4px;
+      padding: clamp(1rem, 1.8vw, 1.7rem);
+      border: 2px solid var(--border-pixel);
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px -3px var(--glow-cyan), inset 0 0 15px -8px var(--glow-cyan);
+    }
+
+    .option-card.opt-a {}
+
+    .option-card.opt-b {}
+
+    .option-header {
+      font-size: clamp(0.6rem, 0.9vw, 0.85rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1vh;
+      padding-bottom: 0.7vh;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: var(--font-pixel);
+      color: var(--neon-yellow);
+    }
+
+    .option-text {
+      font-size: clamp(0.76rem, 1.1vw, 0.97rem);
+      line-height: 1.65;
+      color: var(--text-primary);
+      text-align: justify;
+    }
+
+    /* Code blocks */
+    .option-text.code-text {
+      font-family: 'Fira Code', 'Source Code Pro', 'Cascadia Code', 'Consolas', monospace;
+      font-size: clamp(0.68rem, 0.95vw, 0.88rem);
+      line-height: 1.55;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 4px;
+      padding: clamp(0.6rem, 1vw, 1rem);
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    /* Syntax highlighting - arcade neon colors */
+    .kw {
+      color: var(--neon-magenta);
+    }
+
+    .fn {
+      color: var(--neon-cyan);
+    }
+
+    .str {
+      color: var(--neon-green);
+    }
+
+    .cm {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .num {
+      color: var(--neon-yellow);
+    }
+
+    .op {
+      color: var(--neon-magenta);
+    }
+
+    .type {
+      color: var(--neon-orange);
+    }
+
+    /* ===========================
+     VOTE BANNER
+     =========================== */
+    .vote-banner {
+      margin-top: 2.5vh;
+      padding: 0.9vh 2.8vw;
+      background: rgba(255, 255, 0, 0.06);
+      border: 2px solid var(--neon-yellow);
+      border-radius: 4px;
+      font-size: clamp(0.6rem, 1vw, 0.9rem);
+      font-weight: 600;
+      color: var(--neon-yellow);
+      letter-spacing: 0.04em;
+      position: relative;
+      animation: vote-blink 1s ease-in-out infinite;
+      font-family: var(--font-pixel);
+    }
+
+    @keyframes vote-blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    /* ===========================
+     REVEAL SLIDES
+     =========================== */
+    .reveal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5vw;
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 2.5vh;
+    }
+
+    .reveal-box {
+      border-radius: 4px;
+      padding: clamp(1.4rem, 2.2vw, 2.2rem);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5vh;
+      position: relative;
+      overflow: hidden;
+      animation: reveal-pop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+      border: 2px solid var(--border-pixel);
+    }
+
+    .reveal-box:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    @keyframes reveal-pop {
+      0% {
+        opacity: 0;
+        transform: scale(0.85);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .reveal-box.is-ai {
+      background: rgba(255, 51, 51, 0.06);
+      border-color: var(--neon-red);
+      box-shadow: 0 0 40px -10px rgba(255, 51, 51, 0.4), inset 0 0 30px -15px rgba(255, 51, 51, 0.3);
+    }
+
+    .reveal-box.is-human {
+      background: rgba(57, 255, 20, 0.06);
+      border-color: var(--neon-green);
+      box-shadow: 0 0 40px -10px rgba(57, 255, 20, 0.4), inset 0 0 30px -15px rgba(57, 255, 20, 0.3);
+    }
+
+    /* Scan line across reveal boxes */
+    .reveal-box::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      right: 0;
+      height: 60%;
+      background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+      animation: scan-line 2s ease-in-out 0.3s;
+      pointer-events: none;
+    }
+
+    @keyframes scan-line {
+      0% {
+        top: -60%;
+      }
+
+      100% {
+        top: 160%;
+      }
+    }
+
+    .reveal-badge {
+      font-size: clamp(1.2rem, 2rem, 1.8rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-family: var(--font-pixel);
+    }
+
+    .is-ai .reveal-badge {
+      color: var(--neon-red);
+      text-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+    }
+
+    .is-human .reveal-badge {
+      color: var(--neon-green);
+      text-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+    }
+
+    .reveal-option-label {
+      font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+      color: var(--text-secondary);
+      font-family: var(--font-pixel);
+    }
+
+    .reveal-clue {
+      max-width: 920px;
+      margin-top: 3vh;
+      padding: 1.6vh 2.2vw;
+      background: var(--bg-card);
+      border-radius: 4px;
+      border-left: 4px solid var(--neon-cyan);
+      font-size: clamp(0.85rem, 1.3vw, 1.08rem);
+      line-height: 1.65;
+      color: var(--text-secondary);
+      text-align: left;
+      animation: fade-up 0.5s 0.3s ease both;
+      border: 2px solid var(--border-pixel);
+      border-left: 4px solid var(--neon-cyan);
+    }
+
+    @keyframes fade-up {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===========================
+     PLACEHOLDER (image pair)
+     =========================== */
+    .placeholder-area {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5vw;
+      margin-top: 2vh;
+    }
+
+    .placeholder-box {
+      background: var(--bg-card);
+      border: 2px dashed var(--border-pixel);
+      border-radius: 4px;
+      min-height: 30vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1vh;
+      padding: 2rem;
+      transition: border-color 0.3s;
+    }
+
+    .placeholder-box .icon {
+      font-size: 2.8rem;
+      opacity: 0.2;
+    }
+
+    .placeholder-box .label {
+      font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+      color: var(--text-secondary);
+    }
+
+    /* ===========================
+     MENTIMETER BOX
+     =========================== */
+    .menti-box {
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      padding: clamp(1.2rem, 2vw, 2rem) clamp(2rem, 4vw, 3.5rem);
+      text-align: center;
+      max-width: 700px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menti-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: var(--neon-cyan);
+    }
+
+    .menti-box .menti-url {
+      font-size: clamp(1rem, 1.8vw, 1.5rem);
+      font-weight: 700;
+      color: var(--neon-cyan);
+      margin-bottom: 1vh;
+      font-family: var(--font-pixel);
+    }
+
+    .menti-box .menti-code {
+      font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      color: var(--text-primary);
+      font-family: var(--font-pixel);
+      padding: 0.5em 0;
+    }
+
+    .menti-box .menti-note {
+      font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+      color: var(--text-secondary);
+      font-family: var(--font-pixel);
+    }
+
+    .qr-placeholder {
+      width: clamp(110px, 14vw, 180px);
+      height: clamp(110px, 14vw, 180px);
+      background: #fff;
+      border-radius: 4px;
+      margin: 1.5vh auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 0.82rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* ===========================
+     TRANSITION / FINAL SLIDE
+     =========================== */
+    .big-question {
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      font-weight: 700;
+      text-align: center;
+      max-width: 860px;
+      line-height: 1.45;
+      font-family: var(--font-pixel);
+    }
+
+    .big-question .lead {
+      color: var(--neon-cyan);
+      display: block;
+      margin-bottom: 0.4em;
+    }
+
+    .big-question .punchline {
+      color: var(--text-primary);
+      display: block;
+      animation: fade-up 0.7s 0.2s ease both;
+    }
+
+    /* ===========================
+     INTRO SLIDES
+     =========================== */
+    .intro-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .intro-round {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(64px, 8vw, 96px);
+      height: clamp(64px, 8vw, 96px);
+      border-radius: 4px;
+      border: 2px solid var(--neon-cyan);
+      background: rgba(0, 255, 255, 0.06);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 800;
+      color: var(--neon-cyan);
+      margin-bottom: 2.5vh;
+      box-shadow: 0 0 30px -8px var(--glow-cyan), inset 0 0 20px -10px var(--glow-cyan);
+      animation: round-pulse 3s ease-in-out infinite;
+      font-family: var(--font-pixel);
+    }
+
+    @keyframes round-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 30px -8px var(--glow-cyan), inset 0 0 20px -10px var(--glow-cyan);
+      }
+
+      50% {
+        box-shadow: 0 0 45px -4px var(--glow-cyan), inset 0 0 30px -6px var(--glow-cyan);
+      }
+    }
+
+    .intro-category {
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.8vh;
+      color: var(--text-primary);
+      font-family: var(--font-pixel);
+    }
+
+    .intro-teaser {
+      font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 580px;
+    }
+
+    .intro-hint {
+      margin-top: 4vh;
+      font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+      color: rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: var(--font-pixel);
+    }
+
+    /* ===========================
+     HOW-TO-PLAY STEPS
+     =========================== */
+    .steps-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2.2vh;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: clamp(32px, 3vw, 40px);
+      height: clamp(32px, 3vw, 40px);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: clamp(0.7rem, 1rem, 0.9rem);
+      background: rgba(0, 255, 255, 0.1);
+      border: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: var(--font-pixel);
+    }
+
+    /* ===========================
+     NAVIGATION
+     =========================== */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.8rem;
+      background: rgba(10, 10, 20, 0.9);
+      border-top: 2px solid var(--border-pixel);
+      z-index: 100;
+    }
+
+    .nav-bar button {
+      background: transparent;
+      border: 2px solid var(--border-pixel);
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .nav-bar button:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .nav-bar .counter {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      min-width: 65px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      font-family: var(--font-pixel);
+    }
+
+    .nav-bar .home-link {
+      position: absolute;
+      left: 16px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      transition: color 0.25s;
+      font-family: var(--font-pixel);
+    }
+
+    .nav-bar .home-link:hover {
+      color: var(--neon-cyan);
+    }
+
+    .nav-bar .home-link .home-icon {
+      font-size: 1rem;
+    }
+
+    /* ===========================
+     PROGRESS BAR
+     =========================== */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--neon-cyan);
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 100;
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    /* ===========================
+     TITLE DECORATION
+     =========================== */
+    .title-deco {
+      position: relative;
+      margin-bottom: 0.5em;
+    }
+
+    .title-deco::before,
+    .title-deco::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: clamp(40px, 8vw, 100px);
+      height: 2px;
+      background: var(--neon-cyan);
+    }
+
+    .title-deco::before {
+      right: 105%;
+    }
+
+    .title-deco::after {
+      left: 105%;
+    }
+
+    /* ===========================
+     RESPONSIVE BREAKPOINTS
+     =========================== */
+
+    /* Tablets and small laptops */
+    @media (max-width: 1024px) {
+      .slide {
+        padding: 3vh 3vw 56px;
+      }
+
+      .columns {
+        gap: 1.8vw;
+      }
+
+      .option-text {
+        font-size: clamp(0.74rem, 1.3vw, 0.92rem);
+        line-height: 1.55;
+      }
+
+      .reveal-clue {
+        font-size: clamp(0.82rem, 1.5vw, 1rem);
+      }
+    }
+
+    /* Small tablets / large phones - stack columns */
+    @media (max-width: 768px) {
+      .slide {
+        padding: 2.5vh 4vw 56px;
+      }
+
+      .columns,
+      .reveal-grid,
+      .placeholder-area {
+        grid-template-columns: 1fr;
+        gap: 2vh;
+      }
+
+      .option-card {
+        padding: clamp(0.8rem, 3vw, 1.2rem);
+      }
+
+      .option-text {
+        font-size: 0.88rem;
+      }
+
+      .option-text.code-text {
+        font-size: 0.78rem;
+      }
+
+      .vote-banner {
+        font-size: 0.75rem;
+        padding: 0.7vh 5vw;
+      }
+
+      .reveal-box {
+        padding: 1rem;
+      }
+
+      .reveal-badge {
+        font-size: 1.2rem;
+      }
+
+      .pair-label {
+        font-size: 0.6rem;
+      }
+
+      h2 {
+        font-size: 0.9rem;
+      }
+
+      .menti-box {
+        padding: 1rem;
+      }
+
+      .qr-placeholder {
+        width: 100px;
+        height: 100px;
+      }
+
+      .steps-col {
+        gap: 1.5vh;
+      }
+
+      .glow-1 {
+        width: 200px;
+        height: 200px;
+      }
+
+      .glow-2 {
+        width: 180px;
+        height: 180px;
+      }
+    }
+
+    /* Phones */
+    @media (max-width: 480px) {
+      .slide {
+        padding: 2vh 3.5vw 52px;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      h2 {
+        font-size: 0.8rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+      }
+
+      .option-text {
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      .reveal-clue {
+        padding: 1rem;
+        font-size: 0.82rem;
+      }
+
+      .nav-bar {
+        height: 46px;
+        gap: 1rem;
+      }
+
+      .nav-bar button {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+
+      .big-question {
+        font-size: 1rem;
+      }
+    }
+
+    /* Very short viewports (wide projectors, landscape phones) */
+    @media (max-height: 580px) {
+      .slide {
+        padding: 1.5vh 3vw 48px;
+        justify-content: flex-start;
+        padding-top: 2vh;
+      }
+
+      h2 {
+        font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+      }
+
+      .columns {
+        margin-top: 1vh;
+      }
+
+      .option-card {
+        padding: 0.6rem 0.9rem;
+      }
+
+      .option-text {
+        font-size: clamp(0.68rem, 1vw, 0.85rem);
+        line-height: 1.45;
+      }
+
+      .vote-banner {
+        margin-top: 1vh;
+        padding: 0.5vh 2vw;
+        font-size: 0.7rem;
+      }
+
+      .reveal-grid {
+        margin-top: 1vh;
+      }
+
+      .reveal-box {
+        padding: 0.8rem;
+      }
+
+      .reveal-clue {
+        margin-top: 1.5vh;
+        padding: 0.8vh 1.5vw;
+        font-size: 0.8rem;
+      }
+
+      .pair-label {
+        margin-bottom: 0.4vh;
+      }
+
+      .nav-bar {
+        height: 40px;
+      }
+    }
+
+    /* ===========================
+     UTILITY
+     =========================== */
+    .mt-1 {
+      margin-top: 1vh;
+    }
+
+    .mt-2 {
+      margin-top: 2vh;
+    }
+
+    .mt-3 {
+      margin-top: 3vh;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* Print / fallback: disable animations if user prefers reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01s !important;
+        transition-duration: 0.01s !important;
+      }
+    }
+
+    /* ===========================
+     8-BIT PIXEL EFFECTS
+     =========================== */
+    .pixel-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .pxl {
+      position: absolute;
+      bottom: -10px;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: pxl-rise linear infinite;
+    }
+
+    @keyframes pxl-rise {
+      0% {
+        opacity: 0;
+        transform: translateY(0);
+      }
+
+      10% {
+        opacity: 0.6;
+      }
+
+      90% {
+        opacity: 0.2;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-105vh);
+      }
+    }
+
+    .pixel-star {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: star-twinkle ease-in-out infinite;
+    }
+
+    .pixel-star::before,
+    .pixel-star::after {
+      content: '';
+      position: absolute;
+      background: currentColor;
+      box-shadow: 0 0 4px currentColor;
+    }
+
+    .pixel-star::before {
+      width: 2px;
+      height: 8px;
+      left: 2px;
+      top: -1px;
+    }
+
+    .pixel-star::after {
+      width: 8px;
+      height: 2px;
+      left: -1px;
+      top: 2px;
+    }
+
+    @keyframes star-twinkle {
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(0deg);
+      }
+
+      50% {
+        opacity: 0.45;
+        transform: scale(1) rotate(45deg);
+      }
+    }
+
+    /* ===========================
+     SCAN-IN SLIDE TRANSITION
+     =========================== */
+    @keyframes scan-in {
+      from {
+        clip-path: inset(0 0 0 100%);
+        opacity: 0.3;
+      }
+      to {
+        clip-path: inset(0 0 0 0);
+        opacity: 1;
+      }
+    }
+
+    /* ===========================
+     GLITCH TEXT EFFECT
+     =========================== */
+    .glitch-text {
+      position: relative;
+      display: inline-block;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .glitch-text::before {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px var(--neon-cyan);
+      z-index: -1;
+      animation: glitch-1 3.5s infinite linear;
+    }
+
+    .glitch-text::after {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 8px var(--neon-magenta);
+      z-index: -1;
+      animation: glitch-2 3.5s infinite linear;
+    }
+
+    @keyframes glitch-1 {
+      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      5%        { clip-path: inset(0% 0 65% 0);  transform: translate(-8px, 3px); }
+      7%        { clip-path: inset(30% 0 20% 0);  transform: translate(10px, -2px); }
+      9%        { clip-path: inset(60% 0 0% 0);  transform: translate(-6px, 4px); }
+      11%       { clip-path: inset(10% 0 40% 0);  transform: translate(7px, -3px); }
+      13%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      60%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      62%       { clip-path: inset(0% 0 45% 0);  transform: translate(9px, 2px); }
+      64%       { clip-path: inset(50% 0 5% 0);  transform: translate(-10px, -3px); }
+      65%       { clip-path: inset(15% 0 30% 0);  transform: translate(6px, 4px); }
+      67%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+    }
+
+    @keyframes glitch-2 {
+      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      4%        { clip-path: inset(55% 0 0% 0);  transform: translate(10px, -4px); }
+      6%        { clip-path: inset(0% 0 40% 0);  transform: translate(-8px, 3px); }
+      8%        { clip-path: inset(20% 0 30% 0);  transform: translate(12px, 2px); }
+      10%       { clip-path: inset(45% 0 10% 0);  transform: translate(-7px, -3px); }
+      12%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      58%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      60%       { clip-path: inset(35% 0 10% 0);  transform: translate(-11px, 3px); }
+      62%       { clip-path: inset(5% 0 50% 0);  transform: translate(8px, -4px); }
+      64%       { clip-path: inset(40% 0 0% 0);  transform: translate(-9px, 2px); }
+      66%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CRT OVERLAY -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <!-- ANIMATED BACKGROUND -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="glow-spot glow-1"></div>
+    <div class="glow-spot glow-2"></div>
+  </div>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="deck" id="deck">
+
+    <!-- ==================== SLIDE 1: TITLE ==================== -->
+    <div class="slide active" data-slide="1">
+      <div class="title-deco">
+        <h1>AI or Human?</h1>
+      </div>
+      <p class="subtitle">
+        Can you tell the difference between content made by a person and content generated by AI?
+      </p>
+      <p class="small mt-3">Press <kbd>&#8594;</kbd> or click the arrows to begin</p>
+    </div>
+
+    <!-- ==================== SLIDE 2: HOW TO PLAY ==================== -->
+    <div class="slide" data-slide="2">
+      <h2 style="text-align:center; margin-bottom:2vh;">How to Play</h2>
+      <div class="columns" style="max-width:1020px;">
+        <div class="steps-col">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h3 style="color:var(--neon-cyan); margin-bottom:0.3em;">Read</h3>
+              <p class="small">Each round shows two options: A and B. One was made by a human, the other by AI.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h3 style="color:var(--neon-cyan); margin-bottom:0.3em;">Vote</h3>
+              <p class="small">Use Mentimeter to vote which one you think is AI-generated.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h3 style="color:var(--neon-cyan); margin-bottom:0.3em;">Learn</h3>
+              <p class="small">After each vote, the answer is revealed along with the clues you could have spotted.</p>
+            </div>
+          </div>
+        </div>
+        <div class="menti-box">
+          <div class="menti-url">Mentimeter</div>
+          <img src="../images/mentimeter_qr_code_part1.png" alt="Mentimeter QR code"
+            style="width:clamp(110px,14vw,180px); height:clamp(110px,14vw,180px); border-radius:4px; margin:1.5vh auto; display:block;">
+          <!--div class="menti-code">XXXX XXXX</div-->
+          <!--div class="menti-note">Replace with your Mentimeter code</div-->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: INTRO — PRODUCT REVIEW ==================== -->
+    <div class="slide" data-slide="3">
+      <div class="intro-content">
+        <div class="intro-round">1</div>
+        <div class="intro-category">Product Review</div>
+        <p class="intro-teaser">Every day, millions of product reviews are posted online. Some are written by real
+          buyers. Others are generated by AI to manipulate ratings. Can you tell which is which?</p>
+        <!--p class="intro-hint">Press &rarr; to see the pair</p-->
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: PAIR 1 — PRODUCT REVIEW ==================== -->
+    <div class="slide" data-slide="4">
+      <div class="pair-label">Pair 1 of 5</div>
+      <h2>Product Review <span class="small" style="font-weight:400;">(Wireless Earbuds)</span></h2>
+      <div class="columns">
+        <div class="option-card opt-a">
+          <div class="option-header">Option A</div>
+          <div class="option-text">These are fine for the price I guess. Sound is decent, bass is OK but the mids get
+            kinda muddy when you crank the volume. Battery life is actually pretty good though, I get about 6 hours
+            which is more than what the box says. The case feels cheap, like it'll crack if I drop it, but whatever. My
+            main gripe is the touch controls. Way too sensitive. I keep accidentally skipping songs when I'm just trying
+            to push them back in my ear. Wore them running once, left one fell out after 20 minutes. For $35 they're
+            acceptable but don't expect miracles. If you just need something for your commute they'll do. 3.5/5</div>
+        </div>
+        <div class="option-card opt-b">
+          <div class="option-header">Option B</div>
+          <div class="option-text">I recently purchased these wireless earbuds and have been thoroughly impressed with
+            their overall performance. The sound quality is exceptional, delivering rich bass and crystal-clear highs
+            that create an immersive listening experience. Battery life consistently reaches approximately 6 hours on a
+            single charge, aligning perfectly with the manufacturer's specifications. The ergonomic design ensures a
+            comfortable and secure fit throughout extended listening sessions, making them suitable for both daily
+            commuting and exercise activities. The intuitive touch controls facilitate seamless management of music
+            playback and incoming calls. For the price point, these earbuds represent outstanding value and I would
+            confidently recommend them to anyone seeking a reliable and versatile audio solution.</div>
+        </div>
+      </div>
+      <div class="vote-banner">VOTE NOW on Mentimeter: Which one is AI?</div>
+    </div>
+
+    <!-- ==================== SLIDE 5: REVEAL 1 ==================== -->
+    <div class="slide" data-slide="5">
+      <div class="pair-label">Pair 1 of 5 — Reveal</div>
+      <h2>Product Review</h2>
+      <div class="reveal-grid">
+        <div class="reveal-box is-human">
+          <div class="reveal-option-label">Option A</div>
+          <div class="reveal-badge">Human</div>
+        </div>
+        <div class="reveal-box is-ai">
+          <div class="reveal-option-label">Option B</div>
+          <div class="reveal-badge">AI</div>
+        </div>
+      </div>
+      <div class="reveal-clue">
+        <strong style="color:var(--text-primary);">What gives it away?</strong><br>
+        The human review mentions specific complaints (muddy mids, cheap case, earbud falling out while running) and
+        rates 3.5/5. The AI version is uniformly positive, uses no concrete anecdotes, and reads like marketing copy.
+        Real reviews almost always contain at least one complaint.
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: INTRO — ACADEMIC WRITING ==================== -->
+    <div class="slide" data-slide="6">
+      <div class="intro-content">
+        <div class="intro-round">2</div>
+        <div class="intro-category">Academic Writing</div>
+        <p class="intro-teaser">Research papers follow strict conventions: citations, hedging, methodology sections. AI
+          has learned those patterns too. Can you spot the real researcher?</p>
+        <!--p class="intro-hint">Press &rarr; to see the pair</p-->
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 7: PAIR 2 — ACADEMIC WRITING ==================== -->
+    <div class="slide" data-slide="7">
+      <div class="pair-label">Pair 2 of 5</div>
+      <h2>Academic Writing <span class="small" style="font-weight:400;">(Research on Remote Work)</span></h2>
+      <div class="columns">
+        <div class="option-card opt-a">
+          <div class="option-header">Option A</div>
+          <div class="option-text">The shift to remote work has fundamentally transformed the modern workplace, creating
+            both opportunities and challenges for organizations worldwide. Research consistently demonstrates that
+            remote workers report higher levels of job satisfaction, with studies indicating a 13% increase in
+            productivity among those working from home. The elimination of lengthy commutes provides employees with
+            additional time for both professional development and personal well-being. Furthermore, organizations
+            benefit from reduced overhead costs associated with maintaining physical office spaces. However, it is
+            important to note that the long-term implications of widespread remote work adoption remain an active area
+            of scholarly inquiry.</div>
+        </div>
+        <div class="option-card opt-b">
+          <div class="option-header">Option B</div>
+          <div class="option-text">We surveyed 847 employees across 12 mid-sized firms in the Nordics over a 14-month
+            period (Jan 2022 to Mar 2023). Fully remote workers (n=312) reported 11% higher self-rated productivity
+            compared to in-office peers, but manager-rated performance scores showed no statistically significant
+            difference (p=0.34). Interestingly, hybrid workers (2 to 3 days remote) scored highest on both measures. Our
+            findings partly align with Bloom et al. (2015) but diverge on the question of promotion rates, which dropped
+            7.4% for remote-only staff in our sample. One limitation is that self-selection bias likely inflates the
+            remote productivity figures, as employees who chose remote arrangements may have been more self-motivated to
+            begin with.</div>
+        </div>
+      </div>
+      <div class="vote-banner">VOTE NOW on Mentimeter: Which one is AI?</div>
+    </div>
+
+    <!-- ==================== SLIDE 8: REVEAL 2 ==================== -->
+    <div class="slide" data-slide="8">
+      <div class="pair-label">Pair 2 of 5 — Reveal</div>
+      <h2>Academic Writing</h2>
+      <div class="reveal-grid">
+        <div class="reveal-box is-ai">
+          <div class="reveal-option-label">Option A</div>
+          <div class="reveal-badge">AI</div>
+        </div>
+        <div class="reveal-box is-human">
+          <div class="reveal-option-label">Option B</div>
+          <div class="reveal-badge">Human</div>
+        </div>
+      </div>
+      <div class="reveal-clue">
+        <strong style="color:var(--text-primary);">What gives it away?</strong><br>
+        The AI version sounds fluent but says nothing specific. It cites a generic "13% increase" with no source, no
+        sample size, and no limitations. The human version has a precise sample (847 employees, 12 firms), reports a
+        null result (p=0.34), contradicts another study, and openly admits a limitation. Real researchers hedge and
+        qualify. AI tends to sound confident about everything.
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: INTRO — PORTRAITS ==================== -->
+    <div class="slide" data-slide="9">
+      <div class="intro-content">
+        <div class="intro-round">3</div>
+        <div class="intro-category">Portraits</div>
+        <p class="intro-teaser">AI image generators can now produce photorealistic human faces. Some of these faces
+          belong to real people. Others were never born. Can your eyes tell the difference?</p>
+        <!--p class="intro-hint">Press &rarr; to see the pair</p-->
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 10: PAIR 3 — PORTRAITS (PLACEHOLDER) ==================== -->
+    <div class="slide" data-slide="10">
+      <div class="pair-label">Pair 3 of 5</div>
+      <h2>Portraits</h2>
+      <div class="placeholder-area">
+        <div class="option-card opt-a" style="padding:0; border:none; background:none;">
+          <div class="option-header" style="padding: 0.8rem 1.2rem;">Option A</div>
+          <img src="../images/ai_person.png" alt="Portrait A" style="width:100%; max-height:52vh; object-fit:contain; border-radius:4px; border:2px solid var(--border-pixel); background:var(--bg-card);">
+        </div>
+        <div class="option-card opt-b" style="padding:0; border:none; background:none;">
+          <div class="option-header" style="padding: 0.8rem 1.2rem;">Option B</div>
+          <img src="../images/real_person.jpg" alt="Portrait B" style="width:100%; max-height:52vh; object-fit:contain; border-radius:4px; border:2px solid var(--border-pixel); background:var(--bg-card);">
+        </div>
+      </div>
+      <div class="vote-banner">VOTE NOW on Mentimeter: Which one is AI?</div>
+    </div>
+
+    <!-- ==================== SLIDE 11: REVEAL 3 (PLACEHOLDER) ==================== -->
+    <div class="slide" data-slide="11">
+      <div class="pair-label">Pair 3 of 5 — Reveal</div>
+      <h2>Portraits</h2>
+      <div class="reveal-grid">
+        <div class="reveal-box is-ai">
+          <div class="reveal-option-label">Option A</div>
+          <div class="reveal-badge">AI</div>
+        </div>
+        <div class="reveal-box is-human">
+          <div class="reveal-option-label">Option B</div>
+          <div class="reveal-badge">Human</div>
+        </div>
+      </div>
+      <div class="reveal-clue">
+        <strong style="color:var(--text-primary);">What gives it away?</strong><br>
+        Look at the skin texture. The AI portrait has noticeably smoother skin with almost no visible pores or natural
+        imperfections, giving it a slightly "airbrushed" quality. The real photograph shows natural skin texture
+        with visible pores, uneven lighting across the face, and subtle asymmetries that cameras capture but AI
+        generators tend to smooth away. Also notice the background: the real photo has natural depth of field with
+        genuine bokeh, while the AI image has a more uniform, less optically realistic blur.
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 12: INTRO — CODE ==================== -->
+    <div class="slide" data-slide="12">
+      <div class="intro-content">
+        <div class="intro-round">4</div>
+        <div class="intro-category">Code</div>
+        <p class="intro-teaser">Both humans and AI can write code that compiles and runs correctly. But the way they
+          write it is often different. Can you spot the style difference in a Python function?</p>
+        <!--p class="intro-hint">Press &rarr; to see the pair</p-->
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 13: PAIR 4 — CODE ==================== -->
+    <div class="slide" data-slide="13">
+      <div class="pair-label">Pair 4 of 5</div>
+      <h2>Code <span class="small" style="font-weight:400;">(Python: Check if a Number is Prime)</span></h2>
+      <div class="columns">
+        <div class="option-card opt-a">
+          <div class="option-header">Option A</div>
+          <div class="option-text code-text"><span class="kw">def</span> <span class="fn">is_prime</span>(n):
+            <span class="kw">if</span> n &lt; <span class="num">2</span>:
+            <span class="kw">return</span> <span class="num">False</span>
+            <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span
+              class="num">2</span>, <span class="fn">int</span>(n ** <span class="num">0.5</span>) + <span
+              class="num">1</span>):
+            <span class="kw">if</span> n % i == <span class="num">0</span>:
+            <span class="kw">return</span> <span class="num">False</span>
+            <span class="kw">return</span> <span class="num">True</span>
+          </div>
+        </div>
+        <div class="option-card opt-b">
+          <div class="option-header">Option B</div>
+          <div class="option-text code-text"><span class="kw">def</span> <span class="fn">is_prime</span>(number: <span
+              class="type">int</span>) -&gt; <span class="type">bool</span>:
+            <span class="str">"""
+              Determine whether a given integer is a prime number.
+
+              A prime number is a natural number greater than 1.
+              It has no positive divisors other than 1 and itself.
+
+              Args:
+              number: The integer to check for primality.
+
+              Returns:
+              True if the number is prime, False otherwise.
+              """</span>
+            <span class="kw">if</span> number &lt; <span class="num">2</span>:
+            <span class="kw">return</span> <span class="num">False</span>
+            <span class="kw">if</span> number == <span class="num">2</span>:
+            <span class="kw">return</span> <span class="num">True</span>
+            <span class="kw">if</span> number % <span class="num">2</span> == <span class="num">0</span>:
+            <span class="kw">return</span> <span class="num">False</span>
+            <span class="kw">for</span> divisor <span class="kw">in</span> <span class="fn">range</span>(<span
+              class="num">3</span>, <span class="fn">int</span>(number ** <span class="num">0.5</span>) + <span
+              class="num">1</span>, <span class="num">2</span>):
+            <span class="kw">if</span> number % divisor == <span class="num">0</span>:
+            <span class="kw">return</span> <span class="num">False</span>
+            <span class="kw">return</span> <span class="num">True</span>
+          </div>
+        </div>
+      </div>
+      <div class="vote-banner">VOTE NOW on Mentimeter: Which one is AI?</div>
+    </div>
+
+    <!-- ==================== SLIDE 14: REVEAL 4 ==================== -->
+    <div class="slide" data-slide="14">
+      <div class="pair-label">Pair 4 of 5 — Reveal</div>
+      <h2>Code</h2>
+      <div class="reveal-grid">
+        <div class="reveal-box is-human">
+          <div class="reveal-option-label">Option A</div>
+          <div class="reveal-badge">Human</div>
+        </div>
+        <div class="reveal-box is-ai">
+          <div class="reveal-option-label">Option B</div>
+          <div class="reveal-badge">AI</div>
+        </div>
+      </div>
+      <div class="reveal-clue">
+        <strong style="color:var(--text-primary);">What gives it away?</strong><br>
+        The human version is short and direct: 7 lines, no docstring, single-letter variable name, gets the job done.
+        The AI version adds a full docstring with parameter descriptions and return types, uses descriptive variable
+        names ("number", "divisor"), and includes extra optimizations (skipping even numbers) that nobody asked for.
+        AI-generated code tends to be thorough to the point of being verbose.
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 15: INTRO — FINANCIAL SUMMARY ==================== -->
+    <div class="slide" data-slide="15">
+      <div class="intro-content">
+        <div class="intro-round">5</div>
+        <div class="intro-category">Financial Analysis</div>
+        <p class="intro-teaser">Financial analysts write with a very specific vocabulary and tone. AI has been trained
+          on thousands of these reports and has learned to imitate the style. This is the hardest one. Good luck.</p>
+        <!--p class="intro-hint">Press &rarr; to see the pair</p-->
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 16: PAIR 5 — FINANCIAL SUMMARY ==================== -->
+    <div class="slide" data-slide="16">
+      <div class="pair-label">Pair 5 of 5</div>
+      <h2>Financial Analyst Summary <span class="small" style="font-weight:400;">(Q3 Earnings Report)</span></h2>
+      <div class="columns">
+        <div class="option-card opt-a">
+          <div class="option-header">Option A</div>
+          <div class="option-text">MediCore's third-quarter financial results reflected a mixed performance across its
+            business segments. Total revenue reached €1.4 billion, representing a modest decline from analyst
+            expectations. The pharmaceutical distribution division experienced notable headwinds due to recently
+            implemented European Union pricing regulations, which impacted revenue generation in this segment. Operating
+            margins decreased to 28.1%, compared to 31.3% in the previous quarter, primarily driven by foreign exchange
+            fluctuations and elevated operational expenditures. On a positive note, the digital health platform
+            demonstrated robust growth of 23% year-over-year, highlighting the company's strategic diversification
+            efforts. Management provided fourth-quarter guidance that suggests revenue stabilization, as the company
+            continues to navigate the evolving regulatory landscape.</div>
+        </div>
+        <div class="option-card opt-b">
+          <div class="option-header">Option B</div>
+          <div class="option-text">Q3 was rough for MediCore. Revenue came in at €1.4B, about 6% below consensus. The
+            miss was mostly in their pharma distribution segment which got hit by the new EU pricing regulations we
+            flagged last quarter. Margins compressed to 28.1% from 31.3%. They blamed FX headwinds but honestly the cost
+            structure is bloating. The one bright spot was their digital health platform (+23% YoY) but it's still only
+            8% of total revenue so it barely moves the needle. Mgmt guided Q4 flat which basically confirms the growth
+            story is over for now. We're cutting our PT to €47 from €52 and moving to Underperform.</div>
+        </div>
+      </div>
+      <div class="vote-banner">VOTE NOW on Mentimeter: Which one is AI?</div>
+    </div>
+
+    <!-- ==================== SLIDE 17: REVEAL 5 ==================== -->
+    <div class="slide" data-slide="17">
+      <div class="pair-label">Pair 5 of 5 — Reveal</div>
+      <h2>Financial Analyst Summary</h2>
+      <div class="reveal-grid">
+        <div class="reveal-box is-ai">
+          <div class="reveal-option-label">Option A</div>
+          <div class="reveal-badge">AI</div>
+        </div>
+        <div class="reveal-box is-human">
+          <div class="reveal-option-label">Option B</div>
+          <div class="reveal-badge">Human</div>
+        </div>
+      </div>
+      <div class="reveal-clue">
+        <strong style="color:var(--text-primary);">What gives it away?</strong><br>
+        The AI version is polished but avoids committing to any position. It says "modest decline" and "notable
+        headwinds" without giving an opinion. The human analyst uses Wall Street shorthand ("consensus", "YoY", "PT",
+        "Mgmt"), is blunt ("honestly the cost structure is bloating"), references previous analysis ("we flagged last
+        quarter"), and issues a clear downgrade to Underperform. Real analysts have a point of view. AI hedges.
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 18: TRANSITION ==================== -->
+    <div class="slide" data-slide="18">
+      <div class="big-question">
+        <span class="lead">So if AI can do all of this...</span>
+        <span class="punchline">what does it actually need from you?</span>
+      </div>
+    </div>
+
+  </div><!-- /deck -->
+
+  <!-- NAVIGATION BAR -->
+  <div class="nav-bar">
+    <a class="home-link" href="../index.html" title="Back to hub"><span class="home-icon">&#9664;</span> Prompt Wars</a>
+    <button id="btnPrev" aria-label="Previous slide">&#8592;</button>
+    <span class="counter" id="counter">1 / 18</span>
+    <button id="btnNext" aria-label="Next slide">&#8594;</button>
+    <span class="nav-hint"
+      style="font-size:0.72rem; color:rgba(255,255,255,0.2); position:absolute; right:20px;">&#8592; &#8594; or
+      swipe</span>
+  </div>
+
+  <script>
+    (function () {
+      const slides = document.querySelectorAll('.slide');
+      const total = slides.length;
+      let current = 0;
+
+      const counter = document.getElementById('counter');
+      const progressBar = document.getElementById('progressBar');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+
+      function goTo(index) {
+        if (index < 0 || index >= total) return;
+        slides[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+        counter.textContent = (current + 1) + ' / ' + total;
+        progressBar.style.width = ((current + 1) / total * 100) + '%';
+      }
+
+      function next() { goTo(current + 1); }
+      function prev() { goTo(current - 1); }
+
+      btnPrev.addEventListener('click', prev);
+      btnNext.addEventListener('click', next);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+        if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+        if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+      });
+
+      /* Touch / swipe support */
+      let touchStartX = 0;
+      let touchStartY = 0;
+      document.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        /* Only horizontal swipes (ignore vertical scrolling gestures) */
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          dx < 0 ? next() : prev();
+        }
+      }, { passive: true });
+
+      /* Initial state */
+      goTo(0);
+    })();
+  </script>
+
+  <script>
+    (function () {
+      /* Floating pixel particles */
+      var c = document.createElement('div');
+      c.className = 'pixel-particles';
+      c.setAttribute('aria-hidden', 'true');
+      var colors = ['#00ffff', '#ff00ff', '#ffff00', '#39ff14'];
+      for (var i = 0; i < 12; i++) {
+        var p = document.createElement('div');
+        p.className = 'pxl';
+        var s = 2 + Math.floor(Math.random() * 3);
+        p.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (Math.random() * 100).toFixed(1) + '%;background:' + colors[i % 4] + ';box-shadow:0 0 ' + (s + 2) + 'px ' + colors[i % 4] + ';animation-duration:' + (14 + Math.random() * 16).toFixed(1) + 's;animation-delay:' + (Math.random() * 12).toFixed(1) + 's;';
+        c.appendChild(p);
+      }
+      document.body.appendChild(c);
+      /* Twinkling pixel cross-stars */
+      var sc = ['#00ffff', '#ff00ff', '#ffff00'];
+      for (var j = 0; j < 5; j++) {
+        var st = document.createElement('div');
+        st.className = 'pixel-star';
+        st.setAttribute('aria-hidden', 'true');
+        st.style.cssText = 'color:' + sc[j % 3] + ';left:' + (8 + Math.random() * 84).toFixed(1) + '%;top:' + (8 + Math.random() * 78).toFixed(1) + '%;animation-duration:' + (2.5 + Math.random() * 3).toFixed(1) + 's;animation-delay:' + (Math.random() * 4).toFixed(1) + 's;';
+        document.body.appendChild(st);
+      }
+    })();
+  </script>
+
+  <script>
+    /* Auto-apply glitch effect to headings */
+    (function () {
+      document.querySelectorAll('h1, .intro-category, .big-question .lead').forEach(function (el) {
+        el.classList.add('glitch-text');
+        el.setAttribute('data-text', el.textContent);
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

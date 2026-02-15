@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Wars — Part 2: Prompt Engineering Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-deep: #0a0a14;
+      --bg-card: rgba(10, 10, 30, 0.85);
+      --bg-card-solid: #111128;
+      --border-pixel: #2a2a4a;
+      --text-primary: #e0e8ff;
+      --text-secondary: #6a7098;
+      --neon-cyan: #00ffff;
+      --neon-magenta: #ff00ff;
+      --neon-yellow: #ffff00;
+      --neon-green: #39ff14;
+      --neon-orange: #ff8c00;
+      --neon-red: #ff3333;
+      --glow-cyan: rgba(0, 255, 255, 0.4);
+      --glow-magenta: rgba(255, 0, 255, 0.3);
+      --glow-yellow: rgba(255, 255, 0, 0.3);
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-body: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+    }
+
+    /* CRT SCANLINE OVERLAY */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      background-image:
+        linear-gradient(0deg, transparent 24%, rgba(255, 0, 255, .05) 25%, rgba(255, 0, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, .05) 75%, rgba(255, 0, 255, .05) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, rgba(255, 0, 255, .05) 25%, rgba(255, 0, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, .05) 75%, rgba(255, 0, 255, .05) 76%, transparent 77%, transparent);
+      background-size: 60px 60px;
+      opacity: 0.3;
+    }
+
+    /* BACKGROUND */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-layer::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(ellipse at 30% 25%, var(--neon-cyan) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 75%, var(--neon-magenta) 0%, transparent 50%);
+      filter: blur(100px);
+      opacity: 0.12;
+      animation: bg-drift 25s ease-in-out infinite alternate;
+    }
+
+    @keyframes bg-drift {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-4%, 2%) rotate(2deg);
+      }
+    }
+
+    /* SLIDES */
+    .deck {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3.5vh 4vw 56px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      animation: scan-in 0.55s steps(10, end) both;
+    }
+
+    /* TYPOGRAPHY */
+    h1 {
+      font-family: var(--font-pixel);
+      font-size: clamp(1.4rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1.1;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px var(--glow-cyan), 0 0 40px rgba(0, 255, 255, 0.2);
+    }
+
+    h2 {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.7rem, 1.5vw, 1.1rem);
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-primary);
+    }
+
+    h3 {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.55rem, 1vw, 0.8rem);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 1.7vw, 1.3rem);
+      color: var(--text-secondary);
+      margin-top: 0.7em;
+      text-align: center;
+      line-height: 1.55;
+      max-width: 650px;
+    }
+
+    .small {
+      font-size: clamp(0.8rem, 1.15vw, 0.95rem);
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    kbd {
+      background: var(--bg-card-solid);
+      padding: 0.15em 0.5em;
+      border-radius: 4px;
+      font-size: 0.9em;
+      border: 2px solid var(--border-pixel);
+    }
+
+    /* PILL BADGE */
+    .badge {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.5rem, 0.8vw, 0.65rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      padding: 0.4em 1em;
+      border-radius: 4px;
+      margin-bottom: 1.2vh;
+      font-weight: 700;
+    }
+
+    .badge-cyan {
+      color: var(--neon-cyan);
+      background: var(--bg-card);
+      border: 2px solid var(--neon-cyan);
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .badge-orange {
+      color: var(--neon-orange);
+      background: var(--bg-card);
+      border: 2px solid var(--neon-orange);
+      text-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+    }
+
+    .badge-red {
+      color: var(--neon-red);
+      background: var(--bg-card);
+      border: 2px solid var(--neon-red);
+      text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+    }
+
+    /* INTRO SLIDES */
+    .intro-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .intro-round {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(64px, 8vw, 96px);
+      height: clamp(64px, 8vw, 96px);
+      border-radius: 4px;
+      font-family: var(--font-pixel);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 2.5vh;
+      animation: rpulse 3s ease-in-out infinite;
+    }
+
+    @keyframes rpulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 30px -8px currentColor, inset 0 0 20px -10px currentColor;
+      }
+
+      50% {
+        box-shadow: 0 0 45px -4px currentColor, inset 0 0 30px -6px currentColor;
+      }
+    }
+
+    .round-blue {
+      color: var(--neon-cyan);
+      border: 2px solid var(--neon-cyan);
+      background: var(--bg-card);
+    }
+
+    .round-orange {
+      color: var(--neon-orange);
+      border: 2px solid var(--neon-orange);
+      background: var(--bg-card);
+    }
+
+    .round-red {
+      color: var(--neon-red);
+      border: 2px solid var(--neon-red);
+      background: var(--bg-card);
+    }
+
+    .intro-category {
+      font-family: var(--font-pixel);
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5vh;
+      color: var(--text-primary);
+    }
+
+    .intro-teaser {
+      font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 560px;
+    }
+
+    .intro-hint {
+      margin-top: 3.5vh;
+      font-size: clamp(0.72rem, 0.9vw, 0.82rem);
+      color: rgba(255, 255, 255, 0.18);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* PIXEL CARD */
+    .card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      padding: clamp(1rem, 2vw, 1.8rem);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px var(--glow-cyan);
+    }
+
+    /* TWO-COL / THREE-COL LAYOUTS */
+    .cols-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2vw;
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 2vh;
+    }
+
+    .cols-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5vw;
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 2vh;
+    }
+
+    /* STEP NUMBERS */
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: clamp(30px, 2.5vw, 38px);
+      height: clamp(30px, 2.5vw, 38px);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-pixel);
+      font-weight: 800;
+      font-size: clamp(0.55rem, 1vw, 0.75rem);
+      background: var(--bg-card);
+      border: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    /* ROLE TABLE */
+    .role-table {
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 2vh;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .role-table th {
+      text-align: left;
+      padding: 0.7em 1em;
+      font-size: clamp(0.55rem, 1vw, 0.75rem);
+      color: var(--neon-cyan);
+      font-family: var(--font-pixel);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: rgba(0, 255, 255, 0.08);
+      border-bottom: 2px solid var(--border-pixel);
+      font-weight: 700;
+    }
+
+    .role-table td {
+      padding: 0.65em 1em;
+      font-size: clamp(0.78rem, 1.1vw, 0.95rem);
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-pixel);
+      vertical-align: top;
+    }
+
+    .role-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .role-icon {
+      font-size: 1.3em;
+      margin-right: 0.3em;
+    }
+
+    /* TIMER */
+    .timer-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5vh;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .timer-display {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: clamp(4rem, 12vw, 8rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 30px var(--glow-cyan), 0 0 60px rgba(0, 255, 255, 0.2);
+      transition: all 0.3s;
+    }
+
+    .timer-wrap.timer-done .timer-display {
+      color: var(--neon-red);
+      text-shadow: 0 0 30px var(--neon-red), 0 0 60px rgba(255, 51, 51, 0.3);
+      animation: timer-flash 0.8s ease-in-out infinite;
+    }
+
+    @keyframes timer-flash {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .timer-label {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+      text-transform: uppercase;
+    }
+
+    .timer-wrap.timer-done .timer-label {
+      color: var(--neon-red);
+      text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+    }
+
+    .timer-task {
+      margin-top: 2vh;
+      max-width: 700px;
+      text-align: center;
+      font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+      color: var(--text-secondary);
+      line-height: 1.55;
+      padding: 1.2vh 2vw;
+      background: var(--bg-card);
+      border-radius: 4px;
+      border: 2px solid var(--border-pixel);
+    }
+
+    /* DEBRIEF */
+    .debrief-q {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.65rem, 1.2vw, 0.9rem);
+      font-weight: 700;
+      color: var(--neon-cyan);
+      text-align: center;
+      max-width: 750px;
+      line-height: 1.4;
+      margin-bottom: 2vh;
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .key-lesson {
+      max-width: 800px;
+      padding: 1.4vh 2.2vw;
+      background: var(--bg-card);
+      border-radius: 4px;
+      border-left: 3px solid var(--neon-green);
+      text-align: left;
+      font-size: clamp(0.88rem, 1.3vw, 1.08rem);
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .key-lesson strong {
+      color: var(--neon-green);
+    }
+
+    /* SCORING CRITERIA */
+    .scoring-row {
+      display: flex;
+      gap: 1.5vw;
+      margin-top: 2vh;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .scoring-chip {
+      padding: 0.6em 1.2em;
+      border-radius: 4px;
+      font-family: var(--font-pixel);
+      font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* CHALLENGE LIST */
+    .challenge-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vh;
+      max-width: 800px;
+      margin-top: 2vh;
+    }
+
+    .challenge-list li {
+      padding: 1.2vh 2vw;
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      font-size: clamp(0.88rem, 1.3vw, 1.05rem);
+      line-height: 1.5;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.8em;
+    }
+
+    .challenge-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-pixel);
+      font-weight: 800;
+      font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+      background: var(--bg-card);
+      border: 2px solid var(--neon-red);
+      color: var(--neon-red);
+      text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+    }
+
+    /* NAV */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.8rem;
+      background: rgba(10, 10, 20, 0.9);
+      border-top: 2px solid var(--border-pixel);
+      z-index: 100;
+    }
+
+    .nav-bar button {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid var(--border-pixel);
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .nav-bar button:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 15px var(--glow-cyan);
+    }
+
+    .nav-bar .counter {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
+      color: var(--text-secondary);
+      min-width: 80px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-bar .nav-hint {
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.2);
+      position: absolute;
+      right: 20px;
+    }
+
+    .nav-bar .home-link {
+      position: absolute;
+      left: 16px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-family: var(--font-pixel);
+      font-size: clamp(0.5rem, 0.7vw, 0.6rem);
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      transition: color 0.25s;
+      text-transform: uppercase;
+    }
+
+    .nav-bar .home-link:hover {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .nav-bar .home-link .home-icon {
+      font-size: 1rem;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      z-index: 100;
+      background: var(--neon-cyan);
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .slide {
+        padding: 3vh 3vw 56px;
+      }
+
+      .cols-2,
+      .cols-3 {
+        gap: 1.5vw;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      .cols-2,
+      .cols-3 {
+        grid-template-columns: 1fr;
+        gap: 1.5vh;
+      }
+
+      .role-table {
+        font-size: 0.82rem;
+      }
+
+      .timer-display {
+        font-size: clamp(3rem, 10vw, 5rem);
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      h2 {
+        font-size: 0.75rem;
+      }
+
+      .timer-display {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-height: 580px) {
+      .slide {
+        padding: 1.5vh 3vw 48px;
+        justify-content: flex-start;
+        padding-top: 2vh;
+      }
+
+      .timer-display {
+        font-size: clamp(3rem, 8vw, 5rem);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01s !important;
+        transition-duration: 0.01s !important;
+      }
+    }
+
+    /* ===========================
+       8-BIT PIXEL EFFECTS
+       =========================== */
+    .pixel-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .pxl {
+      position: absolute;
+      bottom: -10px;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: pxl-rise linear infinite;
+    }
+
+    @keyframes pxl-rise {
+      0% { opacity: 0; transform: translateY(0); }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.2; }
+      100% { opacity: 0; transform: translateY(-105vh); }
+    }
+
+    .pixel-star {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: star-twinkle ease-in-out infinite;
+    }
+
+    .pixel-star::before,
+    .pixel-star::after {
+      content: '';
+      position: absolute;
+      background: currentColor;
+      box-shadow: 0 0 4px currentColor;
+    }
+
+    .pixel-star::before {
+      width: 2px;
+      height: 8px;
+      left: 2px;
+      top: -1px;
+    }
+
+    .pixel-star::after {
+      width: 8px;
+      height: 2px;
+      left: -1px;
+      top: 2px;
+    }
+
+    @keyframes star-twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+      50% { opacity: 0.45; transform: scale(1) rotate(45deg); }
+    }
+
+    /* ===========================
+     SCAN-IN SLIDE TRANSITION
+     =========================== */
+    @keyframes scan-in {
+      from {
+        clip-path: inset(0 0 0 100%);
+        opacity: 0.3;
+      }
+      to {
+        clip-path: inset(0 0 0 0);
+        opacity: 1;
+      }
+    }
+
+    /* ===========================
+     GLITCH TEXT EFFECT
+     =========================== */
+    .glitch-text {
+      position: relative;
+      display: inline-block;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .glitch-text::before {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px var(--neon-cyan);
+      z-index: -1;
+      animation: glitch-1 3.5s infinite linear;
+    }
+
+    .glitch-text::after {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 8px var(--neon-magenta);
+      z-index: -1;
+      animation: glitch-2 3.5s infinite linear;
+    }
+
+    @keyframes glitch-1 {
+      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      5%        { clip-path: inset(0% 0 65% 0);  transform: translate(-8px, 3px); }
+      7%        { clip-path: inset(30% 0 20% 0);  transform: translate(10px, -2px); }
+      9%        { clip-path: inset(60% 0 0% 0);  transform: translate(-6px, 4px); }
+      11%       { clip-path: inset(10% 0 40% 0);  transform: translate(7px, -3px); }
+      13%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      60%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      62%       { clip-path: inset(0% 0 45% 0);  transform: translate(9px, 2px); }
+      64%       { clip-path: inset(50% 0 5% 0);  transform: translate(-10px, -3px); }
+      65%       { clip-path: inset(15% 0 30% 0);  transform: translate(6px, 4px); }
+      67%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+    }
+
+    @keyframes glitch-2 {
+      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      4%        { clip-path: inset(55% 0 0% 0);  transform: translate(10px, -4px); }
+      6%        { clip-path: inset(0% 0 40% 0);  transform: translate(-8px, 3px); }
+      8%        { clip-path: inset(20% 0 30% 0);  transform: translate(12px, 2px); }
+      10%       { clip-path: inset(45% 0 10% 0);  transform: translate(-7px, -3px); }
+      12%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      58%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+      60%       { clip-path: inset(35% 0 10% 0);  transform: translate(-11px, 3px); }
+      62%       { clip-path: inset(5% 0 50% 0);  transform: translate(8px, -4px); }
+      64%       { clip-path: inset(40% 0 0% 0);  transform: translate(-9px, 2px); }
+      66%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="deck" id="deck">
+
+    <!-- ========== S1: TITLE ========== -->
+    <div class="slide active" data-slide="1">
+      <h1 style="text-align:center;">Prompt Engineering Challenge</h1>
+      <p class="subtitle">3 rounds. Your team vs. the AI. The quality of what AI produces depends entirely on how you
+        direct it.</p>
+      <p class="small" style="margin-top:3vh;">Press <kbd>&rarr;</kbd> to continue</p>
+    </div>
+
+    <!-- ========== S2: TEAM SETUP ========== -->
+    <div class="slide" data-slide="2">
+      <h2 style="text-align:center; margin-bottom:2.5vh;">Form Your Teams</h2>
+      <div class="cols-3">
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-cyan); margin-bottom:0.8vh;">3-4 people</h3>
+          <p class="small">Mix backgrounds. Every team should have students from at least two different fields.</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-cyan); margin-bottom:0.8vh;">1 laptop per team</h3>
+          <p class="small">Open ChatGPT or Claude in your browser. Free accounts work fine.</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-cyan); margin-bottom:0.8vh;">Pick a team name</h3>
+          <p class="small">Write it on your scoring sheet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== S3: ROUND 1 INTRO ========== -->
+    <div class="slide" data-slide="3">
+      <div class="intro-content">
+        <div class="intro-round round-blue">1</div>
+        <div class="intro-category">Good vs. Bad Prompt</div>
+        <p class="intro-teaser">Same text, same AI, same task. The only variable is your prompt. How much difference can
+          the right words make?</p>
+        <p class="intro-hint">Press &rarr; to see the task</p>
+      </div>
+    </div>
+
+    <!-- ========== S4: ROUND 1 TASK ========== -->
+    <div class="slide" data-slide="4">
+      <div class="badge badge-cyan">Round 1</div>
+      <h2 style="text-align:center;">Your Task</h2>
+      <div class="cols-2" style="max-width:1000px;">
+        <div class="card">
+          <div class="step" style="margin-bottom:1.2vh;">
+            <div class="step-num">1</div>
+            <div>
+              <h3 style="color:var(--neon-red); margin-bottom:0.3em;">Write the WORST prompt</h3>
+              <p class="small">Paste the climate policy text into the AI. Write the most vague, lazy prompt you can
+                think of. Save the output.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="step" style="margin-bottom:1.2vh;">
+            <div class="step-num">2</div>
+            <div>
+              <h3 style="color:var(--neon-green); margin-bottom:0.3em;">Write the BEST prompt</h3>
+              <p class="small">Now write the best prompt you can to get a clear, accurate 5-sentence summary for a
+                general audience. Save the output.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scoring-row">
+        <div class="scoring-chip">Scoring: biggest gap between bad and good output</div>
+        <div class="scoring-chip">+ quality of the final summary</div>
+      </div>
+      <p class="small" style="margin-top:1.5vh;">The climate text is on your handout.</p>
+    </div>
+
+    <!-- ========== S5: ROUND 1 TIMER ========== -->
+    <div class="slide" data-slide="5">
+      <div class="badge badge-cyan">Round 1</div>
+      <div class="timer-wrap" id="timer1" data-minutes="6">
+        <div class="timer-display">06:00</div>
+        <div class="timer-label">Click to start / pause</div>
+      </div>
+      <div class="timer-task">Write your WORST prompt first, then your BEST prompt. Produce a 5-sentence summary of the
+        climate text for a general audience.</div>
+    </div>
+
+    <!-- ========== S6: ROUND 1 DEBRIEF ========== -->
+    <div class="slide" data-slide="6">
+      <div class="badge badge-cyan">Round 1 &mdash; Debrief</div>
+      <div class="debrief-q">"What did you change between your worst and best prompt?"</div>
+      <div class="scoring-row" style="margin-bottom:2vh;">
+        <div class="scoring-chip">Ask the winning team to explain their approach</div>
+      </div>
+      <div class="key-lesson">
+        <strong>Key lesson:</strong> Vague prompts produce vague results. Specificity matters. The exact same AI, given
+        the exact same text, will produce dramatically different outputs depending on how you ask.
+      </div>
+    </div>
+
+    <!-- ========== S7: ROUND 2 INTRO ========== -->
+    <div class="slide" data-slide="7">
+      <div class="intro-content">
+        <div class="intro-round round-orange">2</div>
+        <div class="intro-category">The Consulting Team</div>
+        <p class="intro-teaser">A company wants to install solar panels. Your team is the consulting firm. Each member
+          takes a role matching their expertise and prompts the AI from that angle.</p>
+        <p class="intro-hint">Press &rarr; to see the scenario</p>
+      </div>
+    </div>
+
+    <!-- ========== S8: ROUND 2 SCENARIO ========== -->
+    <div class="slide" data-slide="8">
+      <div class="badge badge-orange">Round 2</div>
+      <h2 style="text-align:center; margin-bottom:1vh;">The Scenario</h2>
+      <div class="card" style="max-width:900px; text-align:center;">
+        <p style="font-size:clamp(0.95rem,1.4vw,1.15rem); line-height:1.65; color:var(--text-primary);">
+          A small company (20 employees, based in Southern Europe) is considering installing solar panels on their 200
+          m&sup2; office roof. The CEO asks your consulting team to use AI to prepare a quick feasibility brief.
+        </p>
+      </div>
+      <p class="small" style="margin-top:2vh;">Each team member takes <strong style="color:var(--text-primary);">one
+          role</strong> and writes <strong style="color:var(--text-primary);">one prompt</strong>. Details on the next
+        slide and on your handout.</p>
+    </div>
+
+    <!-- ========== S9: ROUND 2 ROLES ========== -->
+    <div class="slide" data-slide="9">
+      <div class="badge badge-orange">Round 2</div>
+      <h2 style="text-align:center; margin-bottom:1vh;">The Roles</h2>
+      <table class="role-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Assigned to</th>
+            <th>Your AI prompt should cover...</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="role-icon">&#9889;</span> The Engineer</td>
+            <td>Electrical Eng. student</td>
+            <td>System size, panel count, expected annual energy output for a 200 m&sup2; roof in Southern Europe</td>
+          </tr>
+          <tr>
+            <td><span class="role-icon">&#128200;</span> The Economist</td>
+            <td>Economy student</td>
+            <td>Installation costs, annual savings on electricity, payback period</td>
+          </tr>
+          <tr>
+            <td><span class="role-icon">&#128203;</span> The Manager</td>
+            <td>Info &amp; Management student</td>
+            <td>Top 5 project risks and one mitigation action for each</td>
+          </tr>
+          <tr>
+            <td><span class="role-icon">&#128187;</span> The Technologist</td>
+            <td>Computer Eng. student</td>
+            <td>What data to collect, how to automate performance monitoring</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin-top:1.5vh;">If your team lacks a field, someone volunteers.</p>
+    </div>
+
+    <!-- ========== S10: ROUND 2 TIMER ========== -->
+    <div class="slide" data-slide="10">
+      <div class="badge badge-orange">Round 2</div>
+      <div class="timer-wrap" id="timer2" data-minutes="10">
+        <div class="timer-display">10:00</div>
+        <div class="timer-label">Click to start / pause</div>
+      </div>
+      <div class="timer-task">Step 1: Each member writes ONE prompt from their role.<br>Step 2: Combine all outputs into
+        a one-page brief.<br>Step 3: Present your brief.</div>
+    </div>
+
+    <!-- ========== S11: ROUND 2 DEBRIEF ========== -->
+    <div class="slide" data-slide="11">
+      <div class="badge badge-orange">Round 2 &mdash; Debrief</div>
+      <div class="debrief-q">"Where did the AI give you something useful right away?<br>Where did it clearly make
+        something up?"</div>
+      <div class="scoring-row" style="margin-bottom:2vh;">
+        <div class="scoring-chip">Completeness (1-3 pts)</div>
+        <div class="scoring-chip">Clarity (1-3 pts)</div>
+        <div class="scoring-chip">Coherence across roles (1-3 pts)</div>
+      </div>
+      <div class="key-lesson">
+        <strong>Key lesson:</strong> AI output quality depends on the domain knowledge guiding the prompt. Each field
+        brings something the AI cannot provide on its own. The best results come from combining human expertise with AI
+        capabilities.
+      </div>
+    </div>
+
+    <!-- ========== S12: ROUND 3 INTRO ========== -->
+    <div class="slide" data-slide="12">
+      <div class="intro-content">
+        <div class="intro-round round-red">3</div>
+        <div class="intro-category">Break the AI</div>
+        <p class="intro-teaser">Your mission: make the AI produce the most spectacular failure you can. Be creative. The
+          room votes on the winner.</p>
+        <p class="intro-hint">Press &rarr; to see the challenges</p>
+      </div>
+    </div>
+
+    <!-- ========== S13: ROUND 3 CHALLENGES ========== -->
+    <div class="slide" data-slide="13">
+      <div class="badge badge-red">Round 3</div>
+      <h2 style="text-align:center; margin-bottom:1vh;">Pick at Least One Challenge</h2>
+      <ul class="challenge-list">
+        <li>
+          <div class="challenge-num">A</div> Get the AI to confidently state a false fact about your field of study
+        </li>
+        <li>
+          <div class="challenge-num">B</div> Get it to contradict itself within 3 messages
+        </li>
+        <li>
+          <div class="challenge-num">C</div> Get it to agree with a clearly wrong premise (e.g., "Water boils at 50
+          &deg;C at sea level, right?")
+        </li>
+        <li>
+          <div class="challenge-num">D</div> Get it to produce a completely useless answer to a reasonable question
+        </li>
+      </ul>
+      <p class="small" style="margin-top:2vh;">Screenshot your best "break.". Then each team presents in ~30 seconds.
+      </p>
+    </div>
+
+    <!-- ========== S14: ROUND 3 TIMER ========== -->
+    <div class="slide" data-slide="14">
+      <div class="badge badge-red">Round 3</div>
+      <div class="timer-wrap" id="timer3" data-minutes="7">
+        <div class="timer-display">07:00</div>
+        <div class="timer-label">Click to start / pause</div>
+      </div>
+      <div class="timer-task">Make the AI fail as spectacularly as possible. Screenshot the result. Most impressive
+        failure wins.</div>
+    </div>
+
+    <!-- ========== S15: ROUND 3 SHOWCASE ========== -->
+    <div class="slide" data-slide="15">
+      <div class="badge badge-red">Round 3 &mdash; Showcase</div>
+      <h2 style="text-align:center; margin-bottom:2vh;">Present Your Best Break!</h2>
+      <div class="cols-2" style="max-width:900px;">
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-red); margin-bottom:0.5em;">Each team: ~30 seconds</h3>
+          <p class="small">Show your screenshot. Explain what you did and why the AI failed.</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-cyan); margin-bottom:0.5em;">The room votes</h3>
+          <p class="small">Applause, hand-raise, or Mentimeter. Most impressive failure wins the round.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== S16: ROUND 3 DEBRIEF ========== -->
+    <div class="slide" data-slide="16">
+      <div class="badge badge-red">Round 3 &mdash; Debrief</div>
+      <div class="debrief-q">"Why do these failures happen?"</div>
+      <div class="cols-3" style="max-width:1000px; margin-bottom:2vh;">
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-orange); margin-bottom:0.4em;">Pattern matching</h3>
+          <p class="small">AI was trained on text patterns, not facts. It produces what sounds right, not what is right.
+          </p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-orange); margin-bottom:0.4em;">Sycophancy</h3>
+          <p class="small">AI tends to agree with the user, even when the user is wrong. It was rewarded for being
+            helpful, not for pushing back.</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-orange); margin-bottom:0.4em;">No understanding</h3>
+          <p class="small">AI has no model of truth or reality. It cannot verify its own output. That is your job.</p>
+        </div>
+      </div>
+      <div class="key-lesson">
+        <strong>Key lesson:</strong> AI is not a source of truth. Domain expertise is what catches AI mistakes. Always
+        verify.
+      </div>
+    </div>
+
+  </div><!-- /deck -->
+
+  <div class="nav-bar">
+    <a class="home-link" href="../index.html" title="Back to hub"><span class="home-icon">&#9664;</span> Prompt Wars</a>
+    <button id="btnPrev" aria-label="Previous slide">&#8592;</button>
+    <span class="counter" id="counter">1 / 16</span>
+    <button id="btnNext" aria-label="Next slide">&#8594;</button>
+    <span class="nav-hint">&#8592; &#8594; or swipe</span>
+  </div>
+
+  <script>
+    (function () {
+      /* SLIDE NAVIGATION */
+      const slides = document.querySelectorAll('.slide');
+      const total = slides.length;
+      let current = 0;
+      const counter = document.getElementById('counter');
+      const progressBar = document.getElementById('progressBar');
+
+      function goTo(i) {
+        if (i < 0 || i >= total) return;
+        slides[current].classList.remove('active');
+        current = i;
+        slides[current].classList.add('active');
+        counter.textContent = (current + 1) + ' / ' + total;
+        progressBar.style.width = ((current + 1) / total * 100) + '%';
+      }
+      function next() { goTo(current + 1); }
+      function prev() { goTo(current - 1); }
+
+      document.getElementById('btnNext').addEventListener('click', next);
+      document.getElementById('btnPrev').addEventListener('click', prev);
+      document.addEventListener('keydown', function (e) {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+        if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+        if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+      });
+      let tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx < 0 ? next() : prev(); }
+      }, { passive: true });
+      goTo(0);
+
+      /* TIMERS */
+      document.querySelectorAll('.timer-wrap').forEach(function (el) {
+        var totalSec = parseInt(el.dataset.minutes) * 60;
+        var remaining = totalSec;
+        var running = false;
+        var interval = null;
+        var display = el.querySelector('.timer-display');
+        var label = el.querySelector('.timer-label');
+
+        function render() {
+          var m = Math.floor(remaining / 60);
+          var s = remaining % 60;
+          display.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        }
+
+        function tick() {
+          remaining--;
+          if (remaining <= 0) {
+            remaining = 0;
+            clearInterval(interval);
+            running = false;
+            el.classList.add('timer-done');
+            label.textContent = "Time's up! Click to reset";
+          }
+          render();
+        }
+
+        el.addEventListener('click', function () {
+          if (el.classList.contains('timer-done')) {
+            remaining = totalSec;
+            el.classList.remove('timer-done');
+            running = false;
+            label.textContent = 'Click to start / pause';
+            render();
+            return;
+          }
+          if (running) {
+            clearInterval(interval);
+            running = false;
+            label.textContent = 'Paused. Click to resume';
+          } else {
+            running = true;
+            label.textContent = 'Running... click to pause';
+            interval = setInterval(tick, 1000);
+          }
+        });
+
+        render();
+      });
+    })();
+  </script>
+
+  <script>
+  (function(){
+    /* Floating pixel particles */
+    var c=document.createElement('div');
+    c.className='pixel-particles';
+    c.setAttribute('aria-hidden','true');
+    var colors=['#00ffff','#ff00ff','#ffff00','#39ff14'];
+    for(var i=0;i<12;i++){
+      var p=document.createElement('div');
+      p.className='pxl';
+      var s=2+Math.floor(Math.random()*3);
+      p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(Math.random()*100).toFixed(1)+'%;background:'+colors[i%4]+';box-shadow:0 0 '+(s+2)+'px '+colors[i%4]+';animation-duration:'+(14+Math.random()*16).toFixed(1)+'s;animation-delay:'+(Math.random()*12).toFixed(1)+'s;';
+      c.appendChild(p);
+    }
+    document.body.appendChild(c);
+    /* Twinkling pixel cross-stars */
+    var sc=['#00ffff','#ff00ff','#ffff00'];
+    for(var j=0;j<5;j++){
+      var st=document.createElement('div');
+      st.className='pixel-star';
+      st.setAttribute('aria-hidden','true');
+      st.style.cssText='color:'+sc[j%3]+';left:'+(8+Math.random()*84).toFixed(1)+'%;top:'+(8+Math.random()*78).toFixed(1)+'%;animation-duration:'+(2.5+Math.random()*3).toFixed(1)+'s;animation-delay:'+(Math.random()*4).toFixed(1)+'s;';
+      document.body.appendChild(st);
+    }
+  })();
+  </script>
+
+  <script>
+    /* Auto-apply glitch effect to headings */
+    (function () {
+      document.querySelectorAll('h1, .intro-category, .big-question .lead').forEach(function (el) {
+        el.classList.add('glitch-text');
+        el.setAttribute('data-text', el.textContent);
+      });
+    })();
+  </script>
+
+</body>
+
+</html>
