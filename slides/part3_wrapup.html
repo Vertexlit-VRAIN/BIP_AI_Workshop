@@ -240,20 +240,28 @@
       border: 2px solid var(--border-pixel);
       border-radius: 4px;
       padding: 1.3em 1.5em;
-      text-align: center;
       font-size: clamp(0.85rem, 1.3vw, 1.05rem);
       color: var(--text-primary);
       transition: border-color 0.3s, background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      min-height: 4em;
     }
 
     .poll-option .poll-letter {
-      display: inline-block;
+      flex-shrink: 0;
+      width: 1.6em;
+      text-align: center;
       font-family: var(--font-pixel);
       font-weight: 700;
       color: var(--neon-cyan);
       text-shadow: 0 0 10px var(--glow-cyan);
-      margin-right: 0.4em;
       font-size: 1.1em;
+    }
+
+    .poll-option .poll-label {
+      text-align: left;
     }
 
     .poll-mentimeter {
@@ -651,10 +659,23 @@
     }
 
     @keyframes pxl-rise {
-      0% { opacity: 0; transform: translateY(0); }
-      10% { opacity: 0.6; }
-      90% { opacity: 0.2; }
-      100% { opacity: 0; transform: translateY(-105vh); }
+      0% {
+        opacity: 0;
+        transform: translateY(0);
+      }
+
+      10% {
+        opacity: 0.6;
+      }
+
+      90% {
+        opacity: 0.2;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-105vh);
+      }
     }
 
     .pixel-star {
@@ -691,8 +712,17 @@
     }
 
     @keyframes star-twinkle {
-      0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
-      50% { opacity: 0.45; transform: scale(1) rotate(45deg); }
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(0deg);
+      }
+
+      50% {
+        opacity: 0.45;
+        transform: scale(1) rotate(45deg);
+      }
     }
 
     /* ===========================
@@ -703,6 +733,7 @@
         clip-path: inset(0 0 0 100%);
         opacity: 0.3;
       }
+
       to {
         clip-path: inset(0 0 0 0);
         opacity: 1;
@@ -744,31 +775,121 @@
     }
 
     @keyframes glitch-1 {
-      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      5%        { clip-path: inset(0% 0 65% 0);  transform: translate(-8px, 3px); }
-      7%        { clip-path: inset(30% 0 20% 0);  transform: translate(10px, -2px); }
-      9%        { clip-path: inset(60% 0 0% 0);  transform: translate(-6px, 4px); }
-      11%       { clip-path: inset(10% 0 40% 0);  transform: translate(7px, -3px); }
-      13%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      60%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      62%       { clip-path: inset(0% 0 45% 0);  transform: translate(9px, 2px); }
-      64%       { clip-path: inset(50% 0 5% 0);  transform: translate(-10px, -3px); }
-      65%       { clip-path: inset(15% 0 30% 0);  transform: translate(6px, 4px); }
-      67%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+
+      0%,
+      100% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      5% {
+        clip-path: inset(0% 0 65% 0);
+        transform: translate(-8px, 3px);
+      }
+
+      7% {
+        clip-path: inset(30% 0 20% 0);
+        transform: translate(10px, -2px);
+      }
+
+      9% {
+        clip-path: inset(60% 0 0% 0);
+        transform: translate(-6px, 4px);
+      }
+
+      11% {
+        clip-path: inset(10% 0 40% 0);
+        transform: translate(7px, -3px);
+      }
+
+      13% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      60% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      62% {
+        clip-path: inset(0% 0 45% 0);
+        transform: translate(9px, 2px);
+      }
+
+      64% {
+        clip-path: inset(50% 0 5% 0);
+        transform: translate(-10px, -3px);
+      }
+
+      65% {
+        clip-path: inset(15% 0 30% 0);
+        transform: translate(6px, 4px);
+      }
+
+      67% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
     }
 
     @keyframes glitch-2 {
-      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      4%        { clip-path: inset(55% 0 0% 0);  transform: translate(10px, -4px); }
-      6%        { clip-path: inset(0% 0 40% 0);  transform: translate(-8px, 3px); }
-      8%        { clip-path: inset(20% 0 30% 0);  transform: translate(12px, 2px); }
-      10%       { clip-path: inset(45% 0 10% 0);  transform: translate(-7px, -3px); }
-      12%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      58%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      60%       { clip-path: inset(35% 0 10% 0);  transform: translate(-11px, 3px); }
-      62%       { clip-path: inset(5% 0 50% 0);  transform: translate(8px, -4px); }
-      64%       { clip-path: inset(40% 0 0% 0);  transform: translate(-9px, 2px); }
-      66%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+
+      0%,
+      100% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      4% {
+        clip-path: inset(55% 0 0% 0);
+        transform: translate(10px, -4px);
+      }
+
+      6% {
+        clip-path: inset(0% 0 40% 0);
+        transform: translate(-8px, 3px);
+      }
+
+      8% {
+        clip-path: inset(20% 0 30% 0);
+        transform: translate(12px, 2px);
+      }
+
+      10% {
+        clip-path: inset(45% 0 10% 0);
+        transform: translate(-7px, -3px);
+      }
+
+      12% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      58% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      60% {
+        clip-path: inset(35% 0 10% 0);
+        transform: translate(-11px, 3px);
+      }
+
+      62% {
+        clip-path: inset(5% 0 50% 0);
+        transform: translate(8px, -4px);
+      }
+
+      64% {
+        clip-path: inset(40% 0 0% 0);
+        transform: translate(-9px, 2px);
+      }
+
+      66% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
     }
   </style>
 </head>
@@ -796,14 +917,18 @@
           <div class="slide-title">Quick Poll</div>
           <div class="poll-question">"After today, I think AI is..."</div>
           <div class="poll-options">
-            <div class="poll-option"><span class="poll-letter">A</span> More useful than I expected</div>
-            <div class="poll-option"><span class="poll-letter">B</span> More limited than I expected</div>
-            <div class="poll-option"><span class="poll-letter">C</span> About what I expected</div>
-            <div class="poll-option"><span class="poll-letter">D</span> I need to learn more before I decide</div>
+            <div class="poll-option"><span class="poll-letter">A</span><span class="poll-label">More useful than I
+                expected</span></div>
+            <div class="poll-option"><span class="poll-letter">B</span><span class="poll-label">More limited than I
+                expected</span></div>
+            <div class="poll-option"><span class="poll-letter">C</span><span class="poll-label">About what I
+                expected</span></div>
+            <div class="poll-option"><span class="poll-letter">D</span><span class="poll-label">I need to learn more
+                before I decide</span></div>
           </div>
-          <div class="poll-mentimeter">
-            Vote on Mentimeter: <span class="menti-code">[your code here]</span>
-            <br>or go to <span class="menti-code">menti.com</span>
+          <div class="poll-mentimeter" style="display:flex; align-items:center; gap:1.5em; justify-content:center;">
+            <img src="../images/mentimeter_qr_code_part1.png" alt="Mentimeter QR Code"
+              style="width:clamp(80px,10vw,120px); height:clamp(80px,10vw,120px); border-radius:4px; border:2px solid var(--neon-yellow); box-shadow:0 0 10px var(--glow-yellow);">
           </div>
         </div>
       </div>
@@ -811,22 +936,7 @@
       </div>
     </div>
 
-    <!-- S3: POLL RESULTS (live screen) -->
-    <div class="slide" data-slide="3">
-      <div class="glass" style="text-align:center;">
-        <div class="slide-title">Your Answers</div>
-        <div class="slide-subtitle">Show the live Mentimeter results here</div>
-        <div style="font-size: clamp(3rem, 7vw, 6rem); margin: 0.3em 0; opacity: 0.7;">📊</div>
-        <div
-          style="font-size: clamp(0.85rem, 1.2vw, 1rem); color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.6;">
-          Switch to the Mentimeter presenter view to display live results on screen.
-          No commentary needed beyond reading the distribution.
-        </div>
-      </div>
-      <div class="presenter-note">Alt+Tab to Mentimeter presenter view, or display the result chart here.</div>
-    </div>
-
-    <!-- S4: THREE TAKEAWAYS -->
+    <!-- S3: THREE TAKEAWAYS -->
     <div class="slide" data-slide="4">
       <div class="slide-title">Three Takeaways</div>
       <div class="takeaways">
@@ -858,21 +968,20 @@
         one.</div>
     </div>
 
-    <!-- S5: OPEN MIC (Buffer) -->
+    <!-- S4: OPEN MIC (Buffer) -->
     <div class="slide" data-slide="5">
       <div class="glass" style="text-align: center;">
         <div class="mic-icon">🎤</div>
         <div class="mic-prompt">One thing you plan to try with AI this week?</div>
-        <div class="mic-hint">Take 2-3 volunteer answers from the room</div>
       </div>
       <div class="presenter-note">Buffer activity. Use if you still have time. Skip if running tight.</div>
     </div>
 
-    <!-- S6: THANK YOU -->
+    <!-- S5: THANK YOU -->
     <div class="slide" data-slide="6">
       <div class="final-title">Thank You!</div>
       <div class="final-sub">
-        Thanks for playing. Now go try this with your own work.
+        Thanks for playing.
       </div>
     </div>
 
@@ -939,30 +1048,30 @@
   </script>
 
   <script>
-  (function(){
-    /* Floating pixel particles */
-    var c=document.createElement('div');
-    c.className='pixel-particles';
-    c.setAttribute('aria-hidden','true');
-    var colors=['#00ffff','#ff00ff','#ffff00','#39ff14'];
-    for(var i=0;i<12;i++){
-      var p=document.createElement('div');
-      p.className='pxl';
-      var s=2+Math.floor(Math.random()*3);
-      p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(Math.random()*100).toFixed(1)+'%;background:'+colors[i%4]+';box-shadow:0 0 '+(s+2)+'px '+colors[i%4]+';animation-duration:'+(14+Math.random()*16).toFixed(1)+'s;animation-delay:'+(Math.random()*12).toFixed(1)+'s;';
-      c.appendChild(p);
-    }
-    document.body.appendChild(c);
-    /* Twinkling pixel cross-stars */
-    var sc=['#00ffff','#ff00ff','#ffff00'];
-    for(var j=0;j<5;j++){
-      var st=document.createElement('div');
-      st.className='pixel-star';
-      st.setAttribute('aria-hidden','true');
-      st.style.cssText='color:'+sc[j%3]+';left:'+(8+Math.random()*84).toFixed(1)+'%;top:'+(8+Math.random()*78).toFixed(1)+'%;animation-duration:'+(2.5+Math.random()*3).toFixed(1)+'s;animation-delay:'+(Math.random()*4).toFixed(1)+'s;';
-      document.body.appendChild(st);
-    }
-  })();
+    (function () {
+      /* Floating pixel particles */
+      var c = document.createElement('div');
+      c.className = 'pixel-particles';
+      c.setAttribute('aria-hidden', 'true');
+      var colors = ['#00ffff', '#ff00ff', '#ffff00', '#39ff14'];
+      for (var i = 0; i < 12; i++) {
+        var p = document.createElement('div');
+        p.className = 'pxl';
+        var s = 2 + Math.floor(Math.random() * 3);
+        p.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (Math.random() * 100).toFixed(1) + '%;background:' + colors[i % 4] + ';box-shadow:0 0 ' + (s + 2) + 'px ' + colors[i % 4] + ';animation-duration:' + (14 + Math.random() * 16).toFixed(1) + 's;animation-delay:' + (Math.random() * 12).toFixed(1) + 's;';
+        c.appendChild(p);
+      }
+      document.body.appendChild(c);
+      /* Twinkling pixel cross-stars */
+      var sc = ['#00ffff', '#ff00ff', '#ffff00'];
+      for (var j = 0; j < 5; j++) {
+        var st = document.createElement('div');
+        st.className = 'pixel-star';
+        st.setAttribute('aria-hidden', 'true');
+        st.style.cssText = 'color:' + sc[j % 3] + ';left:' + (8 + Math.random() * 84).toFixed(1) + '%;top:' + (8 + Math.random() * 78).toFixed(1) + '%;animation-duration:' + (2.5 + Math.random() * 3).toFixed(1) + 's;animation-delay:' + (Math.random() * 4).toFixed(1) + 's;';
+        document.body.appendChild(st);
+      }
+    })();
   </script>
 
   <script>
