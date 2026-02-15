@@ -706,10 +706,23 @@
     }
 
     @keyframes pxl-rise {
-      0% { opacity: 0; transform: translateY(0); }
-      10% { opacity: 0.6; }
-      90% { opacity: 0.2; }
-      100% { opacity: 0; transform: translateY(-105vh); }
+      0% {
+        opacity: 0;
+        transform: translateY(0);
+      }
+
+      10% {
+        opacity: 0.6;
+      }
+
+      90% {
+        opacity: 0.2;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-105vh);
+      }
     }
 
     .pixel-star {
@@ -746,8 +759,17 @@
     }
 
     @keyframes star-twinkle {
-      0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
-      50% { opacity: 0.45; transform: scale(1) rotate(45deg); }
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(0deg);
+      }
+
+      50% {
+        opacity: 0.45;
+        transform: scale(1) rotate(45deg);
+      }
     }
 
     /* ===========================
@@ -758,6 +780,7 @@
         clip-path: inset(0 0 0 100%);
         opacity: 0.3;
       }
+
       to {
         clip-path: inset(0 0 0 0);
         opacity: 1;
@@ -799,31 +822,121 @@
     }
 
     @keyframes glitch-1 {
-      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      5%        { clip-path: inset(0% 0 65% 0);  transform: translate(-8px, 3px); }
-      7%        { clip-path: inset(30% 0 20% 0);  transform: translate(10px, -2px); }
-      9%        { clip-path: inset(60% 0 0% 0);  transform: translate(-6px, 4px); }
-      11%       { clip-path: inset(10% 0 40% 0);  transform: translate(7px, -3px); }
-      13%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      60%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      62%       { clip-path: inset(0% 0 45% 0);  transform: translate(9px, 2px); }
-      64%       { clip-path: inset(50% 0 5% 0);  transform: translate(-10px, -3px); }
-      65%       { clip-path: inset(15% 0 30% 0);  transform: translate(6px, 4px); }
-      67%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+
+      0%,
+      100% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      5% {
+        clip-path: inset(0% 0 65% 0);
+        transform: translate(-8px, 3px);
+      }
+
+      7% {
+        clip-path: inset(30% 0 20% 0);
+        transform: translate(10px, -2px);
+      }
+
+      9% {
+        clip-path: inset(60% 0 0% 0);
+        transform: translate(-6px, 4px);
+      }
+
+      11% {
+        clip-path: inset(10% 0 40% 0);
+        transform: translate(7px, -3px);
+      }
+
+      13% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      60% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      62% {
+        clip-path: inset(0% 0 45% 0);
+        transform: translate(9px, 2px);
+      }
+
+      64% {
+        clip-path: inset(50% 0 5% 0);
+        transform: translate(-10px, -3px);
+      }
+
+      65% {
+        clip-path: inset(15% 0 30% 0);
+        transform: translate(6px, 4px);
+      }
+
+      67% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
     }
 
     @keyframes glitch-2 {
-      0%, 100% { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      4%        { clip-path: inset(55% 0 0% 0);  transform: translate(10px, -4px); }
-      6%        { clip-path: inset(0% 0 40% 0);  transform: translate(-8px, 3px); }
-      8%        { clip-path: inset(20% 0 30% 0);  transform: translate(12px, 2px); }
-      10%       { clip-path: inset(45% 0 10% 0);  transform: translate(-7px, -3px); }
-      12%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      58%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
-      60%       { clip-path: inset(35% 0 10% 0);  transform: translate(-11px, 3px); }
-      62%       { clip-path: inset(5% 0 50% 0);  transform: translate(8px, -4px); }
-      64%       { clip-path: inset(40% 0 0% 0);  transform: translate(-9px, 2px); }
-      66%       { clip-path: inset(50% 0 50% 0); transform: translate(0); }
+
+      0%,
+      100% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      4% {
+        clip-path: inset(55% 0 0% 0);
+        transform: translate(10px, -4px);
+      }
+
+      6% {
+        clip-path: inset(0% 0 40% 0);
+        transform: translate(-8px, 3px);
+      }
+
+      8% {
+        clip-path: inset(20% 0 30% 0);
+        transform: translate(12px, 2px);
+      }
+
+      10% {
+        clip-path: inset(45% 0 10% 0);
+        transform: translate(-7px, -3px);
+      }
+
+      12% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      58% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
+
+      60% {
+        clip-path: inset(35% 0 10% 0);
+        transform: translate(-11px, 3px);
+      }
+
+      62% {
+        clip-path: inset(5% 0 50% 0);
+        transform: translate(8px, -4px);
+      }
+
+      64% {
+        clip-path: inset(40% 0 0% 0);
+        transform: translate(-9px, 2px);
+      }
+
+      66% {
+        clip-path: inset(50% 0 50% 0);
+        transform: translate(0);
+      }
     }
   </style>
 </head>
@@ -858,7 +971,7 @@
         </div>
         <div class="card" style="text-align:center;">
           <h3 style="color:var(--neon-cyan); margin-bottom:0.8vh;">Pick a team name</h3>
-          <p class="small">Write it on your scoring sheet.</p>
+          <p class="small">Something creative. You will need it later.</p>
         </div>
       </div>
     </div>
@@ -900,11 +1013,8 @@
           </div>
         </div>
       </div>
-      <div class="scoring-row">
-        <div class="scoring-chip">Scoring: biggest gap between bad and good output</div>
-        <div class="scoring-chip">+ quality of the final summary</div>
-      </div>
-      <p class="small" style="margin-top:1.5vh;">The climate text is on your handout.</p>
+      <p class="small" style="margin-top:1.5vh;">The climate text is on your handout. We will ask a few teams to share
+        afterwards.</p>
     </div>
 
     <!-- ========== S5: ROUND 1 TIMER ========== -->
@@ -922,9 +1032,9 @@
     <div class="slide" data-slide="6">
       <div class="badge badge-cyan">Round 1 &mdash; Debrief</div>
       <div class="debrief-q">"What did you change between your worst and best prompt?"</div>
-      <div class="scoring-row" style="margin-bottom:2vh;">
+      <!--div class="scoring-row" style="margin-bottom:2vh;">
         <div class="scoring-chip">Ask the winning team to explain their approach</div>
-      </div>
+      </div-->
       <div class="key-lesson">
         <strong>Key lesson:</strong> Vague prompts produce vague results. Specificity matters. The exact same AI, given
         the exact same text, will produce dramatically different outputs depending on how you ask.
@@ -1011,11 +1121,6 @@
       <div class="badge badge-orange">Round 2 &mdash; Debrief</div>
       <div class="debrief-q">"Where did the AI give you something useful right away?<br>Where did it clearly make
         something up?"</div>
-      <div class="scoring-row" style="margin-bottom:2vh;">
-        <div class="scoring-chip">Completeness (1-3 pts)</div>
-        <div class="scoring-chip">Clarity (1-3 pts)</div>
-        <div class="scoring-chip">Coherence across roles (1-3 pts)</div>
-      </div>
       <div class="key-lesson">
         <strong>Key lesson:</strong> AI output quality depends on the domain knowledge guiding the prompt. Each field
         brings something the AI cannot provide on its own. The best results come from combining human expertise with AI
@@ -1053,8 +1158,6 @@
           <div class="challenge-num">D</div> Get it to produce a completely useless answer to a reasonable question
         </li>
       </ul>
-      <p class="small" style="margin-top:2vh;">Screenshot your best "break.". Then each team presents in ~30 seconds.
-      </p>
     </div>
 
     <!-- ========== S14: ROUND 3 TIMER ========== -->
@@ -1064,22 +1167,34 @@
         <div class="timer-display">07:00</div>
         <div class="timer-label">Click to start / pause</div>
       </div>
-      <div class="timer-task">Make the AI fail as spectacularly as possible. Screenshot the result. Most impressive
-        failure wins.</div>
+      <div class="card" style="margin-top:2.5vh; max-width:700px; text-align:center;">
+        <p class="small" style="color:var(--text-primary); margin-bottom:0.6em;">Screenshot your best "break" and upload
+          it to the Padlet wall:</p>
+        <p style="font-family:var(--font-pixel); font-size:clamp(0.6rem,1.1vw,0.85rem); letter-spacing:0.04em;">
+          <a href="https://tinyurl.com/bip-ai-work-pad" target="_blank"
+            style="color:var(--neon-red); text-decoration:none; text-shadow:0 0 10px rgba(255,51,51,0.3);">https://tinyurl.com/bip-ai-work-pad</a>
+        </p>
+      </div>
     </div>
 
     <!-- ========== S15: ROUND 3 SHOWCASE ========== -->
     <div class="slide" data-slide="15">
       <div class="badge badge-red">Round 3 &mdash; Showcase</div>
-      <h2 style="text-align:center; margin-bottom:2vh;">Present Your Best Break!</h2>
-      <div class="cols-2" style="max-width:900px;">
+      <h2 style="text-align:center; margin-bottom:2vh;">The Wall of Failures</h2>
+      <div class="cols-3" style="max-width:1000px;">
         <div class="card" style="text-align:center;">
-          <h3 style="color:var(--neon-red); margin-bottom:0.5em;">Each team: ~30 seconds</h3>
-          <p class="small">Show your screenshot. Explain what you did and why the AI failed.</p>
+          <h3 style="color:var(--neon-red); margin-bottom:0.5em;">1. Browse the wall</h3>
+          <p class="small">We will scroll through the Padlet submissions together on screen.</p>
         </div>
         <div class="card" style="text-align:center;">
-          <h3 style="color:var(--neon-cyan); margin-bottom:0.5em;">The room votes</h3>
-          <p class="small">Applause, hand-raise, or Mentimeter. Most impressive failure wins the round.</p>
+          <h3 style="color:var(--neon-cyan); margin-bottom:0.5em;">2. Quick explain</h3>
+          <p class="small">When your screenshot comes up, tell us in 15 seconds what you asked and why the AI failed.
+          </p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h3 style="color:var(--neon-yellow); margin-bottom:0.5em;">3. The room votes</h3>
+          <p class="small">After seeing all submissions, vote by applause or hand-raise. Most impressive failure wins.
+          </p>
         </div>
       </div>
     </div>
@@ -1210,30 +1325,30 @@
   </script>
 
   <script>
-  (function(){
-    /* Floating pixel particles */
-    var c=document.createElement('div');
-    c.className='pixel-particles';
-    c.setAttribute('aria-hidden','true');
-    var colors=['#00ffff','#ff00ff','#ffff00','#39ff14'];
-    for(var i=0;i<12;i++){
-      var p=document.createElement('div');
-      p.className='pxl';
-      var s=2+Math.floor(Math.random()*3);
-      p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(Math.random()*100).toFixed(1)+'%;background:'+colors[i%4]+';box-shadow:0 0 '+(s+2)+'px '+colors[i%4]+';animation-duration:'+(14+Math.random()*16).toFixed(1)+'s;animation-delay:'+(Math.random()*12).toFixed(1)+'s;';
-      c.appendChild(p);
-    }
-    document.body.appendChild(c);
-    /* Twinkling pixel cross-stars */
-    var sc=['#00ffff','#ff00ff','#ffff00'];
-    for(var j=0;j<5;j++){
-      var st=document.createElement('div');
-      st.className='pixel-star';
-      st.setAttribute('aria-hidden','true');
-      st.style.cssText='color:'+sc[j%3]+';left:'+(8+Math.random()*84).toFixed(1)+'%;top:'+(8+Math.random()*78).toFixed(1)+'%;animation-duration:'+(2.5+Math.random()*3).toFixed(1)+'s;animation-delay:'+(Math.random()*4).toFixed(1)+'s;';
-      document.body.appendChild(st);
-    }
-  })();
+    (function () {
+      /* Floating pixel particles */
+      var c = document.createElement('div');
+      c.className = 'pixel-particles';
+      c.setAttribute('aria-hidden', 'true');
+      var colors = ['#00ffff', '#ff00ff', '#ffff00', '#39ff14'];
+      for (var i = 0; i < 12; i++) {
+        var p = document.createElement('div');
+        p.className = 'pxl';
+        var s = 2 + Math.floor(Math.random() * 3);
+        p.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (Math.random() * 100).toFixed(1) + '%;background:' + colors[i % 4] + ';box-shadow:0 0 ' + (s + 2) + 'px ' + colors[i % 4] + ';animation-duration:' + (14 + Math.random() * 16).toFixed(1) + 's;animation-delay:' + (Math.random() * 12).toFixed(1) + 's;';
+        c.appendChild(p);
+      }
+      document.body.appendChild(c);
+      /* Twinkling pixel cross-stars */
+      var sc = ['#00ffff', '#ff00ff', '#ffff00'];
+      for (var j = 0; j < 5; j++) {
+        var st = document.createElement('div');
+        st.className = 'pixel-star';
+        st.setAttribute('aria-hidden', 'true');
+        st.style.cssText = 'color:' + sc[j % 3] + ';left:' + (8 + Math.random() * 84).toFixed(1) + '%;top:' + (8 + Math.random() * 78).toFixed(1) + '%;animation-duration:' + (2.5 + Math.random() * 3).toFixed(1) + 's;animation-delay:' + (Math.random() * 4).toFixed(1) + 's;';
+        document.body.appendChild(st);
+      }
+    })();
   </script>
 
   <script>

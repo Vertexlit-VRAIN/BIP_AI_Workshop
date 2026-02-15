@@ -55,8 +55,8 @@ Close with the question: "So if AI can do all of this, what does it actually nee
 
 - Form teams of 3-4 students, mixing backgrounds deliberately. Each team should have students from at least two different fields.
 - Each team needs at least one laptop with access to ChatGPT or Claude.
-- Hand out printed scoring sheets (team name, points per round).
-- Display the rules: 3 rounds, increasing difficulty, team with the most points wins.
+- Hand out printed handouts with the round tasks and scenario.
+- Display the rules: 3 rounds, increasing difficulty. After each round, volunteers share what they found.
 
 ---
 
@@ -67,9 +67,9 @@ Close with the question: "So if AI can do all of this, what does it actually nee
 - Step 1: Write the worst prompt you can think of and run it. Save the output.
 - Step 2: Write the best prompt you can to produce a clear 5-sentence summary for a general audience. Save the output.
 
-**Scoring:** Teams show both outputs. Points for: biggest gap between worst and best result, and quality of the final summary.
+**Sharing:** Ask 2-3 volunteer teams to show their worst and best outputs side by side. Highlight the contrast.
 
-**Debrief (2 min):** Display one bad prompt and one good prompt side by side on screen. Ask the winning team: "What did you change between your first and second prompt?"
+**Debrief (2 min):** Ask a volunteer team: "What did you change between your first and second prompt?"
 
 **Buffer (2 min):** If time allows, ask the room: "What specific words or instructions in your prompt made the biggest difference?"
 
@@ -98,11 +98,9 @@ If a team lacks a student from a given field, someone else takes that role. This
 
 - Each team member writes ONE prompt from their assigned role (4 min).
 - The team reviews all four AI outputs and combines them into a single one-page feasibility brief (4 min).
-- Each team posts or reads their brief for others to see (2 min).
+- 2-3 volunteer teams share highlights from their brief (2 min).
 
-**Scoring:** The instructor (you) rates each brief on three criteria: completeness, clarity, and whether the four parts fit together coherently. Award 1-3 points per criterion.
-
-**Debrief (3 min):** Ask: "Where did the AI give you something useful right away? Where did it clearly make something up?" Let 2-3 teams answer.
+**Debrief (3 min):** Ask: "Where did the AI give you something useful right away? Where did it clearly make something up?" Let the volunteers and other teams answer.
 
 **Buffer (2 min):** Ask teams: "If you had 5 more minutes, which part of the brief would you redo with a better prompt?"
 
@@ -119,11 +117,11 @@ If a team lacks a student from a given field, someone else takes that role. This
 - Get it to agree with a clearly wrong premise (e.g., "Water boils at 50°C at sea level, right?").
 - Get it to produce a completely useless answer to a reasonable question.
 
-Each team screenshots their best "break."
+Each team screenshots their best "break" and uploads it to the shared Padlet wall (link displayed on the slide: https://tinyurl.com/bip-ai-work-pad).
 
-**Scoring:** Each team presents their best failure in ~30 seconds. The room votes on the most impressive failure using Mentimeter, a quick hand-raise, or applause volume.
+**Sharing:** Open the Padlet wall on the projector and scroll through all submissions. As each screenshot comes up, the team that posted it gives a 15-second explanation of what they asked and why the AI failed. After all submissions are shown, the room votes on the most impressive failure using applause or hand-raise.
 
-**Debrief (3 min):** Display the top 2-3 failures on screen. Briefly explain why these failures happen: the AI was trained on patterns in text, it tends to agree with the user even when the user is wrong (sycophancy), and it has no actual understanding of whether its output is true or false.
+**Debrief (3 min):** Highlight the top 2-3 failures from the Padlet wall. Briefly explain why these failures happen: the AI was trained on patterns in text, it tends to agree with the user even when the user is wrong (sycophancy), and it has no actual understanding of whether its output is true or false.
 
 **Key lesson:** AI is not a source of truth. Domain expertise is what catches AI mistakes. Always verify.
 
@@ -180,7 +178,8 @@ The core activities require approximately 50 minutes. The buffer activities add 
 - [ ] Voting tool setup (Mentimeter or Slido free tier) and colored cards as fallback
 - [ ] Dense text excerpt for Round 1 (e.g., EU AI Act Article 6, ~300 words)
 - [ ] Printed handout with the solar panel scenario and role assignments (Round 2)
-- [ ] Printed scoring sheets (team name, points per round)
+- [ ] Printed student handouts with round tasks and scenario
+- [ ] Padlet board created for Round 3 "Break the AI" screenshot uploads (link on slide: https://tinyurl.com/bip-ai-work-pad)
 - [ ] Final Mentimeter poll question pre-loaded (Part 3)
 - [ ] Three Takeaways slide ready (Part 3)
 - [ ] Students need: one laptop per team, a free ChatGPT or Claude account
@@ -201,9 +200,9 @@ All task instructions should appear on screen or on printed handouts, not only s
 
 Assign roles based on student backgrounds where possible. If a team has two economists and no engineer, one economist takes the engineer role. This is a feature, not a problem: it demonstrates that prompting AI about an unfamiliar domain is harder, which reinforces the core lesson about domain knowledge.
 
-### On scoring
+### On sharing and volunteers
 
-Keep scoring light and fun. The goal is engagement, not serious competition. Award bonus points for creative or funny failures in Round 3 to keep the mood playful. Avoid spending more than 30 seconds tallying scores between rounds.
+After each round, ask for 2-3 volunteer teams to share their results. Do not force every team to present. If no one volunteers immediately, pick a team that looked engaged during the round. Keep the sharing brief and conversational. The goal is discussion, not evaluation.
 
 ### On what changed from v1
 
