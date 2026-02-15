@@ -676,6 +676,28 @@
       }
     }
 
+    /* TYPEWRITER CURSOR */
+    .typewriter-cursor::after {
+      content: '\2588';
+      animation: blink-cursor 0.6s step-end infinite;
+      color: var(--neon-cyan);
+      margin-left: 2px;
+    }
+
+    @keyframes blink-cursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* CRT VIGNETTE */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 98;
+      pointer-events: none;
+      box-shadow: inset 0 0 120px 40px rgba(0, 0, 0, 0.55), inset 0 0 300px 80px rgba(0, 0, 0, 0.25);
+    }
+
     @media (prefers-reduced-motion: reduce) {
 
       *,
@@ -944,6 +966,7 @@
 <body>
 
   <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
   <div class="bg-layer" aria-hidden="true"></div>
   <div class="progress-bar" id="progressBar"></div>
 
@@ -1357,6 +1380,46 @@
       document.querySelectorAll('h1, .intro-category, .big-question .lead').forEach(function (el) {
         el.classList.add('glitch-text');
         el.setAttribute('data-text', el.textContent);
+      });
+    })();
+  </script>
+
+  <script>
+    /* Typewriter reveal for debrief questions */
+    (function () {
+      var els = document.querySelectorAll('.debrief-q');
+      els.forEach(function (el) {
+        el.setAttribute('data-tw-full', el.innerHTML);
+        el.innerHTML = '';
+      });
+
+      function typewrite(el, html, i, cb) {
+        if (i > html.length) { el.classList.remove('typewriter-cursor'); if (cb) cb(); return; }
+        /* skip inside HTML tags so they appear instantly */
+        if (html[i] === '<') {
+          var close = html.indexOf('>', i);
+          if (close !== -1) { el.innerHTML = html.slice(0, close + 1); typewrite(el, html, close + 1, cb); return; }
+        }
+        el.innerHTML = html.slice(0, i);
+        setTimeout(function () { typewrite(el, html, i + 1, cb); }, 28);
+      }
+
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          if (m.type === 'attributes' && m.attributeName === 'class') {
+            var slide = m.target;
+            if (slide.classList.contains('active')) {
+              var tw = slide.querySelector('.debrief-q[data-tw-full]');
+              if (tw && tw.innerHTML !== tw.getAttribute('data-tw-full')) {
+                tw.classList.add('typewriter-cursor');
+                typewrite(tw, tw.getAttribute('data-tw-full'), 0);
+              }
+            }
+          }
+        });
+      });
+      document.querySelectorAll('.slide').forEach(function (s) {
+        observer.observe(s, { attributes: true });
       });
     })();
   </script>

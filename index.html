@@ -439,6 +439,15 @@
       }
     }
 
+    /* CRT VIGNETTE */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 98;
+      pointer-events: none;
+      box-shadow: inset 0 0 120px 40px rgba(0, 0, 0, 0.55), inset 0 0 300px 80px rgba(0, 0, 0, 0.25);
+    }
+
     @media (prefers-reduced-motion: reduce) {
 
       *,
@@ -763,6 +772,7 @@
 <body>
 
   <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
 
   <div class="bg-layer" aria-hidden="true">
     <div class="glow-spot glow-1"></div>
