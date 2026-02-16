@@ -33,4 +33,17 @@
     el.classList.add('glitch-text');
     el.setAttribute('data-text', el.textContent);
   });
+
+  /* Theme toggle: press T to switch dark/light */
+  var hint = document.createElement('div');
+  hint.className = 'theme-toggle-hint';
+  hint.textContent = 'Press T: toggle theme';
+  document.body.appendChild(hint);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 't' || e.key === 'T') {
+      document.body.classList.toggle('light-theme');
+    }
+  });
 })();
