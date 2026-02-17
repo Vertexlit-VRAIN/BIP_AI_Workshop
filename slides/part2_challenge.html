@@ -18,7 +18,7 @@
       color: var(--text-primary);
     }
 
-    /* CRT SCANLINE OVERLAY */
+    /* CRT SCANLINE OVERLAY (Part 2-specific grid pattern) */
     .crt-overlay {
       position: fixed;
       inset: 0;
@@ -31,15 +31,7 @@
       opacity: 0.3;
     }
 
-    /* BACKGROUND */
-    .bg-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
+    /* BACKGROUND (Part 2-specific) */
     .bg-layer::before {
       content: '';
       position: absolute;
@@ -55,88 +47,16 @@
     }
 
     @keyframes bg-drift {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-      }
-
-      100% {
-        transform: translate(-4%, 2%) rotate(2deg);
-      }
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-4%, 2%) rotate(2deg); }
     }
 
-    /* SLIDES */
-    .deck {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      z-index: 1;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3.5vh 4vw 56px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      animation: scan-in 0.55s steps(10, end) both;
-    }
-
-    /* TYPOGRAPHY */
-    h1 {
-      font-family: var(--font-pixel);
-      font-size: clamp(1.4rem, 3.5vw, 2.5rem);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      line-height: 1.1;
-      color: var(--neon-cyan);
-      text-shadow: 0 0 20px var(--glow-cyan), 0 0 40px rgba(0, 255, 255, 0.2);
-    }
-
-    h2 {
-      font-family: var(--font-pixel);
-      font-size: clamp(0.7rem, 1.5vw, 1.1rem);
-      font-weight: 700;
-      line-height: 1.6;
-      color: var(--text-primary);
-    }
-
+    /* Part 2-specific typography */
     h3 {
       font-family: var(--font-pixel);
       font-size: clamp(0.55rem, 1vw, 0.8rem);
       font-weight: 700;
       line-height: 1.6;
-    }
-
-    .subtitle {
-      font-size: clamp(1rem, 1.7vw, 1.3rem);
-      color: var(--text-secondary);
-      margin-top: 0.7em;
-      text-align: center;
-      line-height: 1.55;
-      max-width: 650px;
-    }
-
-    .small {
-      font-size: clamp(0.8rem, 1.15vw, 0.95rem);
-      color: var(--text-secondary);
-      line-height: 1.55;
-    }
-
-    kbd {
-      background: var(--bg-card-solid);
-      padding: 0.15em 0.5em;
-      border-radius: 4px;
-      font-size: 0.9em;
-      border: 2px solid var(--border-pixel);
     }
 
     /* PILL BADGE */
@@ -505,148 +425,23 @@
       text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
     }
 
-    /* NAV */
-    .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1.8rem;
-      background: rgba(10, 10, 20, 0.9);
-      border-top: 2px solid var(--border-pixel);
-      z-index: 100;
-    }
-
-    .nav-bar button {
-      background: rgba(255, 255, 255, 0.03);
-      border: 2px solid var(--border-pixel);
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s ease;
-    }
-
-    .nav-bar button:hover {
-      border-color: var(--neon-cyan);
-      color: var(--neon-cyan);
-      box-shadow: 0 0 15px var(--glow-cyan);
-    }
-
-    .nav-bar .counter {
-      font-family: var(--font-pixel);
-      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
-      color: var(--text-secondary);
-      min-width: 80px;
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.05em;
-    }
-
-    .nav-bar .nav-hint {
-      font-size: 0.72rem;
-      color: rgba(255, 255, 255, 0.2);
-      position: absolute;
-      right: 20px;
-    }
-
-    .nav-bar .home-link {
-      position: absolute;
-      left: 16px;
-      text-decoration: none;
-      color: var(--text-secondary);
-      font-family: var(--font-pixel);
-      font-size: clamp(0.5rem, 0.7vw, 0.6rem);
-      letter-spacing: 0.06em;
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      transition: color 0.25s;
-      text-transform: uppercase;
-    }
-
-    .nav-bar .home-link:hover {
-      color: var(--neon-cyan);
-      text-shadow: 0 0 10px var(--glow-cyan);
-    }
-
-    .nav-bar .home-link .home-icon {
-      font-size: 1rem;
-    }
-
-    .progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      z-index: 100;
-      background: var(--neon-cyan);
-      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-      box-shadow: 0 0 10px var(--glow-cyan);
-    }
-
-    /* RESPONSIVE */
+    /* RESPONSIVE (Part 2-specific) */
     @media (max-width: 1024px) {
-      .slide {
-        padding: 3vh 3vw 56px;
-      }
-
-      .cols-2,
-      .cols-3 {
-        gap: 1.5vw;
-      }
+      .cols-2, .cols-3 { gap: 1.5vw; }
     }
 
     @media (max-width: 768px) {
-
-      .cols-2,
-      .cols-3 {
-        grid-template-columns: 1fr;
-        gap: 1.5vh;
-      }
-
-      .role-table {
-        font-size: 0.82rem;
-      }
-
-      .timer-display {
-        font-size: clamp(3rem, 10vw, 5rem);
-      }
+      .cols-2, .cols-3 { grid-template-columns: 1fr; gap: 1.5vh; }
+      .role-table { font-size: 0.82rem; }
+      .timer-display { font-size: clamp(3rem, 10vw, 5rem); }
     }
 
     @media (max-width: 480px) {
-      h1 {
-        font-size: 1.2rem;
-      }
-
-      h2 {
-        font-size: 0.75rem;
-      }
-
-      .timer-display {
-        font-size: 3rem;
-      }
+      .timer-display { font-size: 3rem; }
     }
 
     @media (max-height: 580px) {
-      .slide {
-        padding: 1.5vh 3vw 48px;
-        justify-content: flex-start;
-        padding-top: 2vh;
-      }
-
-      .timer-display {
-        font-size: clamp(3rem, 8vw, 5rem);
-      }
+      .timer-display { font-size: clamp(3rem, 8vw, 5rem); }
     }
 
   </style>
@@ -947,44 +742,11 @@
     <span class="nav-hint">&#8592; &#8594; or swipe</span>
   </div>
 
+  <script src="../shared-slides.js"></script>
   <script>
     (function () {
-      /* SLIDE NAVIGATION */
-      const slides = document.querySelectorAll('.slide');
-      const total = slides.length;
-      let current = 0;
-      const counter = document.getElementById('counter');
-      const progressBar = document.getElementById('progressBar');
-
-      function goTo(i) {
-        if (i < 0 || i >= total) return;
-        slides[current].classList.remove('active');
-        current = i;
-        slides[current].classList.add('active');
-        counter.textContent = (current + 1) + ' / ' + total;
-        progressBar.style.width = ((current + 1) / total * 100) + '%';
-      }
-      function next() { goTo(current + 1); }
-      function prev() { goTo(current - 1); }
-
-      document.getElementById('btnNext').addEventListener('click', next);
-      document.getElementById('btnPrev').addEventListener('click', prev);
-      document.addEventListener('keydown', function (e) {
-        if (e.target.tagName === 'INPUT') return;
-        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
-        if (e.key === 'Home') { e.preventDefault(); goTo(0); }
-        if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
-      });
-      let tx = 0, ty = 0;
-      document.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
-      document.addEventListener('touchend', function (e) {
-        const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx < 0 ? next() : prev(); }
-      }, { passive: true });
-      goTo(0);
-
       /* TIMERS */
+      var timers = [];
       document.querySelectorAll('.timer-wrap').forEach(function (el) {
         var totalSec = parseInt(el.dataset.minutes) * 60;
         var remaining = totalSec;
@@ -993,10 +755,16 @@
         var display = el.querySelector('.timer-display');
         var label = el.querySelector('.timer-label');
 
+        /* Accessibility */
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('role', 'button');
+
         function render() {
           var m = Math.floor(remaining / 60);
           var s = remaining % 60;
-          display.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+          var timeStr = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+          display.textContent = timeStr;
+          el.setAttribute('aria-label', 'Timer ' + timeStr + '. ' + label.textContent);
         }
 
         function tick() {
@@ -1011,7 +779,7 @@
           render();
         }
 
-        el.addEventListener('click', function () {
+        function toggle() {
           if (el.classList.contains('timer-done')) {
             remaining = totalSec;
             el.classList.remove('timer-done');
@@ -1024,14 +792,46 @@
             clearInterval(interval);
             running = false;
             label.textContent = 'Paused. Click to resume';
+            render();
           } else {
             running = true;
             label.textContent = 'Running... click to pause';
             interval = setInterval(tick, 1000);
+            render();
+          }
+        }
+
+        function pause() {
+          if (running) {
+            clearInterval(interval);
+            running = false;
+            label.textContent = 'Paused. Click to resume';
+            render();
+          }
+        }
+
+        el.addEventListener('click', toggle);
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
           }
         });
 
         render();
+        timers.push({ el: el, pause: pause });
+      });
+
+      /* Init deck with slide-change callback to pause timers */
+      initDeck({
+        onSlideChange: function (oldIndex) {
+          var oldSlide = document.querySelectorAll('.slide')[oldIndex];
+          if (oldSlide) {
+            timers.forEach(function (t) {
+              if (oldSlide.contains(t.el)) t.pause();
+            });
+          }
+        }
       });
     })();
   </script>

@@ -18,15 +18,7 @@
       color: var(--text-primary);
     }
 
-    /* BACKGROUND */
-    .bg-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
+    /* BACKGROUND (Part 3-specific) */
     .bg-layer::before {
       content: '';
       position: absolute;
@@ -41,20 +33,15 @@
     }
 
     @keyframes bg-drift {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-      }
-
-      100% {
-        transform: translate(-4%, 2%) rotate(2deg);
-      }
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-4%, 2%) rotate(2deg); }
     }
 
-    /* CRT OVERLAY */
+    /* CRT OVERLAY (Part 3-specific scanlines) */
     .crt-overlay {
       position: fixed;
       inset: 0;
-      z-index: 99;
+      z-index: 999;
       pointer-events: none;
       background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
       background-size: 100% 4px;
@@ -62,39 +49,8 @@
     }
 
     @keyframes scanlines {
-      0% {
-        background-position: 0 0;
-      }
-
-      100% {
-        background-position: 0 4px;
-      }
-    }
-
-    /* SLIDES */
-    .deck {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      z-index: 1;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3.5vh 4vw 56px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      animation: scan-in 0.55s steps(10, end) both;
+      0% { background-position: 0 0; }
+      100% { background-position: 0 4px; }
     }
 
     /* PIXEL CARD */
@@ -109,7 +65,7 @@
       overflow: hidden;
     }
 
-    /* TYPOGRAPHY */
+    /* Part 3-specific typography */
     .slide-title {
       font-family: var(--font-pixel);
       font-size: clamp(0.7rem, 1.5vw, 1.1rem);
@@ -164,20 +120,7 @@
       text-align: center;
     }
 
-    .small {
-      font-family: var(--font-body);
-      font-size: clamp(0.8rem, 1.15vw, 0.95rem);
-      color: var(--text-secondary);
-      line-height: 1.55;
-    }
-
-    kbd {
-      font-family: var(--font-pixel);
-      background: var(--bg-card-solid);
-      padding: 0.15em 0.5em;
-      border-radius: 4px;
-      font-size: 0.9em;
-      border: 2px solid var(--border-pixel);
+    .slide kbd {
       color: var(--neon-cyan);
     }
 
@@ -411,94 +354,6 @@
       line-height: 1.6;
     }
 
-    /* PROGRESS BAR */
-    .progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      z-index: 100;
-      background: var(--neon-cyan);
-      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-      box-shadow: 0 0 10px var(--glow-cyan);
-    }
-
-    /* NAV BAR */
-    .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1.8rem;
-      background: rgba(10, 10, 20, 0.9);
-      border-top: 2px solid var(--border-pixel);
-      z-index: 100;
-    }
-
-    .nav-bar button {
-      background: transparent;
-      border: 2px solid var(--border-pixel);
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s ease;
-    }
-
-    .nav-bar button:hover {
-      border-color: var(--neon-cyan);
-      color: var(--neon-cyan);
-      box-shadow: 0 0 12px var(--glow-cyan);
-    }
-
-    .nav-bar .counter {
-      font-family: var(--font-pixel);
-      font-size: clamp(0.5rem, 0.7vw, 0.7rem);
-      color: var(--text-secondary);
-      min-width: 65px;
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.04em;
-    }
-
-    .nav-bar .nav-hint {
-      font-size: 0.72rem;
-      color: rgba(255, 255, 255, 0.2);
-      position: absolute;
-      right: 20px;
-    }
-
-    .nav-bar .home-link {
-      position: absolute;
-      left: 16px;
-      font-family: var(--font-pixel);
-      text-decoration: none;
-      color: var(--text-secondary);
-      font-size: clamp(0.4rem, 0.6vw, 0.6rem);
-      letter-spacing: 0.06em;
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      transition: color 0.25s;
-    }
-
-    .nav-bar .home-link:hover {
-      color: var(--neon-cyan);
-    }
-
-    .nav-bar .home-link .home-icon {
-      font-size: 1rem;
-    }
-
     /* PRESENTER NOTE */
     .presenter-note {
       position: absolute;
@@ -511,95 +366,25 @@
       max-width: 70%;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 1024px) {
-      .slide {
-        padding: 3vh 3vw 56px;
-      }
-    }
-
+    /* RESPONSIVE (Part 3-specific) */
     @media (max-width: 768px) {
-      .slide {
-        padding: 2.5vh 4vw 56px;
-      }
-
-      .poll-options {
-        grid-template-columns: 1fr;
-      }
-
-      .glass {
-        padding: 1.5vh 4vw;
-      }
-
-      .takeaway-card {
-        padding: 1.2em 1.4em;
-      }
-
-      .takeaway-num {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-      }
+      .poll-options { grid-template-columns: 1fr; }
+      .glass { padding: 1.5vh 4vw; }
+      .takeaway-card { padding: 1.2em 1.4em; }
+      .takeaway-num { width: 36px; height: 36px; font-size: 1rem; }
     }
 
     @media (max-width: 480px) {
-      .slide {
-        padding: 2vh 3.5vw 52px;
-      }
-
-      .glass {
-        padding: 1.2vh 3.5vw;
-      }
-
-      .poll-option {
-        padding: 1em;
-      }
-
-      .big-title {
-        font-size: 2rem;
-      }
-
-      .final-title {
-        font-size: 2.2rem;
-      }
-
-      .nav-bar {
-        height: 46px;
-        gap: 1rem;
-      }
-
-      .nav-bar button {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-      }
+      .glass { padding: 1.2vh 3.5vw; }
+      .poll-option { padding: 1em; }
+      .big-title { font-size: 2rem; }
+      .final-title { font-size: 2.2rem; }
     }
 
     @media (max-height: 580px) {
-      .slide {
-        padding: 1.5vh 3vw 48px;
-        justify-content: flex-start;
-        padding-top: 2vh;
-      }
-
-      .glass {
-        padding: 1vh 3vw;
-      }
-
-      .takeaway-card {
-        padding: 0.8em 1em;
-        gap: 0.8em;
-      }
-
-      .takeaway-num {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-      }
-
-      .nav-bar {
-        height: 40px;
-      }
+      .glass { padding: 1vh 3vw; }
+      .takeaway-card { padding: 0.8em 1em; gap: 0.8em; }
+      .takeaway-num { width: 32px; height: 32px; font-size: 0.9rem; }
     }
 
   </style>
@@ -649,7 +434,7 @@
     </div>
 
     <!-- S3: THREE TAKEAWAYS -->
-    <div class="slide" data-slide="4">
+    <div class="slide" data-slide="3">
       <div class="slide-title">Three Takeaways</div>
       <div class="takeaways">
         <div class="takeaway-card">
@@ -681,7 +466,7 @@
     </div>
 
     <!-- S4: OPEN MIC (Buffer) -->
-    <div class="slide" data-slide="5">
+    <div class="slide" data-slide="4">
       <div class="glass" style="text-align: center;">
         <div class="mic-icon">🎤</div>
         <div class="mic-prompt">One thing you plan to try with AI this week?</div>
@@ -690,7 +475,7 @@
     </div>
 
     <!-- S5: THANK YOU -->
-    <div class="slide" data-slide="6">
+    <div class="slide" data-slide="5">
       <div class="final-title">Thank You!</div>
       <div class="final-sub">
         Thanks for playing.
@@ -704,60 +489,13 @@
   <div class="nav-bar">
     <a class="home-link" href="../index.html" title="Back to hub"><span class="home-icon">&#9664;</span> Prompt Wars</a>
     <button id="btnPrev" aria-label="Previous slide">&#8592;</button>
-    <span class="counter" id="counter">1 / 6</span>
+    <span class="counter" id="counter">1 / 5</span>
     <button id="btnNext" aria-label="Next slide">&#8594;</button>
     <span class="nav-hint">&#8592; &#8594; or swipe</span>
   </div>
 
-  <script>
-    (function () {
-      const slides = document.querySelectorAll('.slide');
-      const total = slides.length;
-      let current = 0;
-
-      const counter = document.getElementById('counter');
-      const progressBar = document.getElementById('progressBar');
-
-      function goTo(index) {
-        if (index < 0 || index >= total) return;
-        slides[current].classList.remove('active');
-        current = index;
-        slides[current].classList.add('active');
-        counter.textContent = (current + 1) + ' / ' + total;
-        progressBar.style.width = ((current + 1) / total * 100) + '%';
-      }
-
-      function next() { goTo(current + 1); }
-      function prev() { goTo(current - 1); }
-
-      document.getElementById('btnPrev').addEventListener('click', prev);
-      document.getElementById('btnNext').addEventListener('click', next);
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
-        if (e.key === 'Home') { e.preventDefault(); goTo(0); }
-        if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
-      });
-
-      /* Touch / swipe support */
-      let touchStartX = 0;
-      let touchStartY = 0;
-      document.addEventListener('touchstart', function (e) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }, { passive: true });
-      document.addEventListener('touchend', function (e) {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-          dx < 0 ? next() : prev();
-        }
-      }, { passive: true });
-
-      goTo(0);
-    })();
-  </script>
+  <script src="../shared-slides.js"></script>
+  <script>initDeck();</script>
 
   <script src="../shared.js"></script>
 

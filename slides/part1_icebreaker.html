@@ -19,29 +19,16 @@
       color: var(--text-primary);
     }
 
-    /* ===========================
-     CRT OVERLAY
-     =========================== */
+    /* CRT OVERLAY */
     .crt-overlay {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      z-index: 999;
       pointer-events: none;
       background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.06) 0px, rgba(0, 0, 0, 0.06) 1px, transparent 1px, transparent 3px);
     }
 
-    /* ===========================
-     ANIMATED BACKGROUND LAYERS
-     =========================== */
-    .bg-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    /* Slow-moving gradient wash */
+    /* BACKGROUND (Part 1-specific) */
     .bg-layer::before {
       content: '';
       position: absolute;
@@ -55,16 +42,10 @@
     }
 
     @keyframes bg-drift {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-      }
-
-      100% {
-        transform: translate(-5%, 3%) rotate(3deg);
-      }
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-5%, 3%) rotate(3deg); }
     }
 
-    /* Subtle grid overlay */
     .bg-layer::after {
       content: '';
       position: absolute;
@@ -77,14 +58,7 @@
       -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
     }
 
-    /* Glow spots (arcade style) */
-    .glow-spot {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.18;
-      will-change: transform;
-    }
+    .glow-spot { opacity: 0.18; }
 
     .glow-1 {
       width: 420px;
@@ -105,102 +79,20 @@
     }
 
     @keyframes orb-float-1 {
-      0% {
-        transform: translate(0, 0);
-      }
-
-      100% {
-        transform: translate(80px, 60px);
-      }
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(80px, 60px); }
     }
 
     @keyframes orb-float-2 {
-      0% {
-        transform: translate(0, 0);
-      }
-
-      100% {
-        transform: translate(-70px, -50px);
-      }
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-70px, -50px); }
     }
 
-    /* ===========================
-     SLIDE ENGINE
-     =========================== */
-    .deck {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      z-index: 1;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3.5vh 4vw 56px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      animation: scan-in 0.55s steps(10, end) both;
-    }
-
-    /* ===========================
-     TYPOGRAPHY
-     =========================== */
-    h1 {
-      font-size: clamp(1.4rem, 3.5vw, 2.5rem);
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      line-height: 1.1;
-      font-family: var(--font-pixel);
-      color: var(--neon-cyan);
-      text-shadow: 0 0 20px var(--glow-cyan), 0 0 40px rgba(0, 255, 255, 0.3);
-    }
-
-    h2 {
-      font-size: clamp(0.7rem, 1.5vw, 1.1rem);
-      font-weight: 700;
-      line-height: 1.6;
-      font-family: var(--font-pixel);
-      color: var(--text-primary);
-    }
-
+    /* Part 1-specific typography */
     h3 {
       font-size: clamp(1.05rem, 1.8vw, 1.4rem);
       font-weight: 600;
       line-height: 1.35;
-    }
-
-    .subtitle {
-      font-size: clamp(1rem, 1.8vw, 1.35rem);
-      color: var(--text-secondary);
-      margin-top: 0.8em;
-      max-width: 620px;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    .small {
-      font-size: clamp(0.82rem, 1.2vw, 1rem);
-      color: var(--text-secondary);
-      line-height: 1.55;
-    }
-
-    kbd {
-      background: var(--bg-card-solid);
-      padding: 0.15em 0.55em;
-      border-radius: 2px;
-      font-size: 0.92em;
-      border: 2px solid var(--border-pixel);
-      font-family: var(--font-pixel);
     }
 
     /* ===========================
@@ -693,91 +585,6 @@
     }
 
     /* ===========================
-     NAVIGATION
-     =========================== */
-    .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1.8rem;
-      background: rgba(10, 10, 20, 0.9);
-      border-top: 2px solid var(--border-pixel);
-      z-index: 100;
-    }
-
-    .nav-bar button {
-      background: transparent;
-      border: 2px solid var(--border-pixel);
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s ease;
-    }
-
-    .nav-bar button:hover {
-      border-color: var(--neon-cyan);
-      color: var(--neon-cyan);
-      text-shadow: 0 0 10px var(--glow-cyan);
-    }
-
-    .nav-bar .counter {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      min-width: 65px;
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.04em;
-      font-family: var(--font-pixel);
-    }
-
-    .nav-bar .home-link {
-      position: absolute;
-      left: 16px;
-      text-decoration: none;
-      color: var(--text-secondary);
-      font-size: 0.6rem;
-      letter-spacing: 0.06em;
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      transition: color 0.25s;
-      font-family: var(--font-pixel);
-    }
-
-    .nav-bar .home-link:hover {
-      color: var(--neon-cyan);
-    }
-
-    .nav-bar .home-link .home-icon {
-      font-size: 1rem;
-    }
-
-    /* ===========================
-     PROGRESS BAR
-     =========================== */
-    .progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      background: var(--neon-cyan);
-      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-      z-index: 100;
-      box-shadow: 0 0 10px var(--glow-cyan);
-    }
-
-    /* ===========================
      TITLE DECORATION
      =========================== */
     .title-deco {
@@ -803,215 +610,44 @@
       left: 105%;
     }
 
-    /* ===========================
-     RESPONSIVE BREAKPOINTS
-     =========================== */
-
-    /* Tablets and small laptops */
+    /* RESPONSIVE (Part 1-specific) */
     @media (max-width: 1024px) {
-      .slide {
-        padding: 3vh 3vw 56px;
-      }
-
-      .columns {
-        gap: 1.8vw;
-      }
-
-      .option-text {
-        font-size: clamp(0.74rem, 1.3vw, 0.92rem);
-        line-height: 1.55;
-      }
-
-      .reveal-clue {
-        font-size: clamp(0.82rem, 1.5vw, 1rem);
-      }
+      .columns { gap: 1.8vw; }
+      .option-text { font-size: clamp(0.74rem, 1.3vw, 0.92rem); line-height: 1.55; }
+      .reveal-clue { font-size: clamp(0.82rem, 1.5vw, 1rem); }
     }
 
-    /* Small tablets / large phones - stack columns */
     @media (max-width: 768px) {
-      .slide {
-        padding: 2.5vh 4vw 56px;
-      }
-
-      .columns,
-      .reveal-grid,
-      .placeholder-area {
-        grid-template-columns: 1fr;
-        gap: 2vh;
-      }
-
-      .option-card {
-        padding: clamp(0.8rem, 3vw, 1.2rem);
-      }
-
-      .option-text {
-        font-size: 0.88rem;
-      }
-
-      .option-text.code-text {
-        font-size: 0.78rem;
-      }
-
-      .vote-banner {
-        font-size: 0.75rem;
-        padding: 0.7vh 5vw;
-      }
-
-      .reveal-box {
-        padding: 1rem;
-      }
-
-      .reveal-badge {
-        font-size: 1.2rem;
-      }
-
-      .pair-label {
-        font-size: 0.6rem;
-      }
-
-      h2 {
-        font-size: 0.9rem;
-      }
-
-      .menti-box {
-        padding: 1rem;
-      }
-
-      .qr-placeholder {
-        width: 100px;
-        height: 100px;
-      }
-
-      .steps-col {
-        gap: 1.5vh;
-      }
-
-      .glow-1 {
-        width: 200px;
-        height: 200px;
-      }
-
-      .glow-2 {
-        width: 180px;
-        height: 180px;
-      }
+      .columns, .reveal-grid, .placeholder-area { grid-template-columns: 1fr; gap: 2vh; }
+      .option-card { padding: clamp(0.8rem, 3vw, 1.2rem); }
+      .option-text { font-size: 0.88rem; }
+      .option-text.code-text { font-size: 0.78rem; }
+      .vote-banner { font-size: 0.75rem; padding: 0.7vh 5vw; }
+      .reveal-box { padding: 1rem; }
+      .reveal-badge { font-size: 1.2rem; }
+      .pair-label { font-size: 0.6rem; }
+      .menti-box { padding: 1rem; }
+      .qr-placeholder { width: 100px; height: 100px; }
+      .steps-col { gap: 1.5vh; }
     }
 
-    /* Phones */
     @media (max-width: 480px) {
-      .slide {
-        padding: 2vh 3.5vw 52px;
-      }
-
-      h1 {
-        font-size: 1.4rem;
-      }
-
-      h2 {
-        font-size: 0.8rem;
-      }
-
-      .subtitle {
-        font-size: 0.9rem;
-      }
-
-      .option-text {
-        font-size: 0.82rem;
-        line-height: 1.5;
-      }
-
-      .reveal-clue {
-        padding: 1rem;
-        font-size: 0.82rem;
-      }
-
-      .nav-bar {
-        height: 46px;
-        gap: 1rem;
-      }
-
-      .nav-bar button {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-      }
-
-      .big-question {
-        font-size: 1rem;
-      }
+      .subtitle { font-size: 0.9rem; }
+      .option-text { font-size: 0.82rem; line-height: 1.5; }
+      .reveal-clue { padding: 1rem; font-size: 0.82rem; }
+      .big-question { font-size: 1rem; }
     }
 
-    /* Very short viewports (wide projectors, landscape phones) */
     @media (max-height: 580px) {
-      .slide {
-        padding: 1.5vh 3vw 48px;
-        justify-content: flex-start;
-        padding-top: 2vh;
-      }
-
-      h2 {
-        font-size: clamp(0.85rem, 1.8vw, 1.1rem);
-      }
-
-      .columns {
-        margin-top: 1vh;
-      }
-
-      .option-card {
-        padding: 0.6rem 0.9rem;
-      }
-
-      .option-text {
-        font-size: clamp(0.68rem, 1vw, 0.85rem);
-        line-height: 1.45;
-      }
-
-      .vote-banner {
-        margin-top: 1vh;
-        padding: 0.5vh 2vw;
-        font-size: 0.7rem;
-      }
-
-      .reveal-grid {
-        margin-top: 1vh;
-      }
-
-      .reveal-box {
-        padding: 0.8rem;
-      }
-
-      .reveal-clue {
-        margin-top: 1.5vh;
-        padding: 0.8vh 1.5vw;
-        font-size: 0.8rem;
-      }
-
-      .pair-label {
-        margin-bottom: 0.4vh;
-      }
-
-      .nav-bar {
-        height: 40px;
-      }
-    }
-
-    /* ===========================
-     UTILITY
-     =========================== */
-    .mt-1 {
-      margin-top: 1vh;
-    }
-
-    .mt-2 {
-      margin-top: 2vh;
-    }
-
-    .mt-3 {
-      margin-top: 3vh;
-    }
-
-    .text-center {
-      text-align: center;
+      .slide h2 { font-size: clamp(0.85rem, 1.8vw, 1.1rem); }
+      .columns { margin-top: 1vh; }
+      .option-card { padding: 0.6rem 0.9rem; }
+      .option-text { font-size: clamp(0.68rem, 1vw, 0.85rem); line-height: 1.45; }
+      .vote-banner { margin-top: 1vh; padding: 0.5vh 2vw; font-size: 0.7rem; }
+      .reveal-grid { margin-top: 1vh; }
+      .reveal-box { padding: 0.8rem; }
+      .reveal-clue { margin-top: 1.5vh; padding: 0.8vh 1.5vw; font-size: 0.8rem; }
+      .pair-label { margin-bottom: 0.4vh; }
     }
   </style>
 </head>
@@ -1430,59 +1066,8 @@
       swipe</span>
   </div>
 
-  <script>
-    (function () {
-      const slides = document.querySelectorAll('.slide');
-      const total = slides.length;
-      let current = 0;
-
-      const counter = document.getElementById('counter');
-      const progressBar = document.getElementById('progressBar');
-      const btnPrev = document.getElementById('btnPrev');
-      const btnNext = document.getElementById('btnNext');
-
-      function goTo(index) {
-        if (index < 0 || index >= total) return;
-        slides[current].classList.remove('active');
-        current = index;
-        slides[current].classList.add('active');
-        counter.textContent = (current + 1) + ' / ' + total;
-        progressBar.style.width = ((current + 1) / total * 100) + '%';
-      }
-
-      function next() { goTo(current + 1); }
-      function prev() { goTo(current - 1); }
-
-      btnPrev.addEventListener('click', prev);
-      btnNext.addEventListener('click', next);
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
-        if (e.key === 'Home') { e.preventDefault(); goTo(0); }
-        if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
-      });
-
-      /* Touch / swipe support */
-      let touchStartX = 0;
-      let touchStartY = 0;
-      document.addEventListener('touchstart', function (e) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }, { passive: true });
-      document.addEventListener('touchend', function (e) {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        /* Only horizontal swipes (ignore vertical scrolling gestures) */
-        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-          dx < 0 ? next() : prev();
-        }
-      }, { passive: true });
-
-      /* Initial state */
-      goTo(0);
-    })();
-  </script>
+  <script src="../shared-slides.js"></script>
+  <script>initDeck();</script>
 
   <script src="../shared.js"></script>
 
