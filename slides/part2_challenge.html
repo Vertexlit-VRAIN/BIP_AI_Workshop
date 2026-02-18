@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prompt Wars — Part 2: Prompt Engineering Challenge</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../shared.css">
   <style>
@@ -822,14 +823,57 @@
         timers.push({ el: el, pause: pause });
       });
 
-      /* Init deck with slide-change callback to pause timers */
+      /* Typewriter reveal for debrief questions */
+      var twEls = document.querySelectorAll('.debrief-q');
+      var twTimeouts = [];
+      twEls.forEach(function (el) {
+        el.setAttribute('data-tw-full', el.innerHTML);
+        el.innerHTML = '';
+      });
+
+      function typewrite(el, html, i, cb) {
+        if (i > html.length) { el.classList.remove('typewriter-cursor'); if (cb) cb(); return; }
+        if (html[i] === '<') {
+          var close = html.indexOf('>', i);
+          if (close !== -1) { el.innerHTML = html.slice(0, close + 1); typewrite(el, html, close + 1, cb); return; }
+        }
+        el.innerHTML = html.slice(0, i);
+        twTimeouts.push(setTimeout(function () { typewrite(el, html, i + 1, cb); }, 28));
+      }
+
+      function resetTypewriter(el) {
+        el.classList.remove('typewriter-cursor');
+        el.innerHTML = '';
+      }
+
+      /* Init deck with slide-change callback to pause timers + trigger typewriter */
       initDeck({
-        onSlideChange: function (oldIndex) {
-          var oldSlide = document.querySelectorAll('.slide')[oldIndex];
+        onSlideChange: function (oldIndex, newIndex) {
+          var allSlides = document.querySelectorAll('.slide');
+          var oldSlide = allSlides[oldIndex];
+          var newSlide = allSlides[newIndex];
+
+          /* Pause timers on old slide */
           if (oldSlide) {
             timers.forEach(function (t) {
               if (oldSlide.contains(t.el)) t.pause();
             });
+          }
+
+          /* Reset typewriter on old slide */
+          twTimeouts.forEach(clearTimeout);
+          twTimeouts.length = 0;
+          twEls.forEach(function (el) {
+            if (oldSlide && oldSlide.contains(el)) resetTypewriter(el);
+          });
+
+          /* Start typewriter on new slide */
+          if (newSlide) {
+            var tw = newSlide.querySelector('.debrief-q[data-tw-full]');
+            if (tw) {
+              tw.classList.add('typewriter-cursor');
+              typewrite(tw, tw.getAttribute('data-tw-full'), 0);
+            }
           }
         }
       });
@@ -837,46 +881,6 @@
   </script>
 
   <script src="../shared.js"></script>
-
-  <script>
-    /* Typewriter reveal for debrief questions */
-    (function () {
-      var els = document.querySelectorAll('.debrief-q');
-      els.forEach(function (el) {
-        el.setAttribute('data-tw-full', el.innerHTML);
-        el.innerHTML = '';
-      });
-
-      function typewrite(el, html, i, cb) {
-        if (i > html.length) { el.classList.remove('typewriter-cursor'); if (cb) cb(); return; }
-        /* skip inside HTML tags so they appear instantly */
-        if (html[i] === '<') {
-          var close = html.indexOf('>', i);
-          if (close !== -1) { el.innerHTML = html.slice(0, close + 1); typewrite(el, html, close + 1, cb); return; }
-        }
-        el.innerHTML = html.slice(0, i);
-        setTimeout(function () { typewrite(el, html, i + 1, cb); }, 28);
-      }
-
-      var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-          if (m.type === 'attributes' && m.attributeName === 'class') {
-            var slide = m.target;
-            if (slide.classList.contains('active')) {
-              var tw = slide.querySelector('.debrief-q[data-tw-full]');
-              if (tw && tw.innerHTML !== tw.getAttribute('data-tw-full')) {
-                tw.classList.add('typewriter-cursor');
-                typewrite(tw, tw.getAttribute('data-tw-full'), 0);
-              }
-            }
-          }
-        });
-      });
-      document.querySelectorAll('.slide').forEach(function (s) {
-        observer.observe(s, { attributes: true });
-      });
-    })();
-  </script>
 
 </body>
 

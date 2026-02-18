@@ -107,18 +107,37 @@
 }
 
 /* ===========================
-   SCAN-IN SLIDE TRANSITION
+   DIRECTIONAL SLIDE TRANSITIONS
    =========================== */
-@keyframes scan-in {
-  from {
-    clip-path: inset(0 0 0 100%);
-    opacity: 0.3;
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
+/* Enter: forward (left to right reveal) */
+@keyframes scan-in-fwd {
+  from { clip-path: inset(0 100% 0 0); opacity: 0.3; }
+  to   { clip-path: inset(0 0 0 0);    opacity: 1; }
 }
+
+/* Enter: backward (right to left reveal) */
+@keyframes scan-in-bwd {
+  from { clip-path: inset(0 0 0 100%); opacity: 0.3; }
+  to   { clip-path: inset(0 0 0 0);    opacity: 1; }
+}
+
+/* Exit: forward (shrinks to the left) */
+@keyframes scan-out-fwd {
+  from { clip-path: inset(0 0 0 0);    opacity: 1; }
+  to   { clip-path: inset(0 0 0 100%); opacity: 0; }
+}
+
+/* Exit: backward (shrinks to the right) */
+@keyframes scan-out-bwd {
+  from { clip-path: inset(0 0 0 0);    opacity: 1; }
+  to   { clip-path: inset(0 100% 0 0); opacity: 0; }
+}
+
+.slide.enter-fwd { animation: scan-in-fwd 0.5s steps(10, end) both; }
+.slide.enter-bwd { animation: scan-in-bwd 0.5s steps(10, end) both; }
+.slide.exit-fwd  { animation: scan-out-fwd 0.4s steps(10, end) both; }
+.slide.exit-bwd  { animation: scan-out-bwd 0.4s steps(10, end) both; }
+
 
 /* ===========================
    TYPEWRITER CURSOR
@@ -279,7 +298,41 @@ body.light-theme .bg-layer {
 .slide.active {
   opacity: 1;
   pointer-events: auto;
-  animation: scan-in 0.55s steps(10, end) both;
+}
+
+/* ===========================
+   BACK-TO-HUB BUTTON (last slide)
+   =========================== */
+.back-to-hub {
+  position: fixed;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  display: none;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-pixel);
+  font-size: clamp(0.55rem, 1vw, 0.75rem);
+  color: var(--neon-cyan);
+  background: var(--bg-card);
+  border: 2px solid var(--neon-cyan);
+  padding: 0.65em 1.6em;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 18px var(--glow-cyan), inset 0 0 12px rgba(0, 255, 255, 0.05);
+  transition: box-shadow 0.25s, background 0.25s;
+}
+
+.back-to-hub:hover {
+  background: rgba(0, 255, 255, 0.08);
+  box-shadow: 0 0 28px var(--glow-cyan), inset 0 0 18px rgba(0, 255, 255, 0.1);
+}
+
+.back-to-hub.visible {
+  display: flex;
 }
 
 /* ===========================

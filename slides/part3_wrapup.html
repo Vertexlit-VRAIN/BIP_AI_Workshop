@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prompt Wars — Part 3: Wrap-up</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../shared.css">
   <style>
@@ -45,7 +46,7 @@
       pointer-events: none;
       background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
       background-size: 100% 4px;
-      animation: scanlines 8ms linear infinite;
+      animation: scanlines 120ms linear infinite;
     }
 
     @keyframes scanlines {
@@ -495,7 +496,6 @@
   </div>
 
   <script src="../shared-slides.js"></script>
-  <script>initDeck();</script>
 
   <script src="../shared.js"></script>
 
@@ -504,6 +504,7 @@
     (function () {
       var selector = '.poll-question, .mic-prompt';
       var els = document.querySelectorAll(selector);
+      var twTimeouts = [];
       els.forEach(function (el) {
         el.setAttribute('data-tw-full', el.innerHTML);
         el.innerHTML = '';
@@ -516,25 +517,36 @@
           if (close !== -1) { el.innerHTML = html.slice(0, close + 1); typewrite(el, html, close + 1); return; }
         }
         el.innerHTML = html.slice(0, i);
-        setTimeout(function () { typewrite(el, html, i + 1); }, 28);
+        twTimeouts.push(setTimeout(function () { typewrite(el, html, i + 1); }, 28));
       }
 
-      var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-          if (m.type === 'attributes' && m.attributeName === 'class') {
-            var slide = m.target;
-            if (slide.classList.contains('active')) {
-              var tw = slide.querySelector('[data-tw-full]');
-              if (tw && tw.innerHTML !== tw.getAttribute('data-tw-full')) {
-                tw.classList.add('typewriter-cursor');
-                typewrite(tw, tw.getAttribute('data-tw-full'), 0);
-              }
+      function resetTypewriter(el) {
+        el.classList.remove('typewriter-cursor');
+        el.innerHTML = '';
+      }
+
+      initDeck({
+        onSlideChange: function (oldIndex, newIndex) {
+          var allSlides = document.querySelectorAll('.slide');
+          var oldSlide = allSlides[oldIndex];
+          var newSlide = allSlides[newIndex];
+
+          /* Reset typewriters on old slide */
+          twTimeouts.forEach(clearTimeout);
+          twTimeouts.length = 0;
+          els.forEach(function (el) {
+            if (oldSlide && oldSlide.contains(el)) resetTypewriter(el);
+          });
+
+          /* Start typewriter on new slide */
+          if (newSlide) {
+            var tw = newSlide.querySelector('[data-tw-full]');
+            if (tw) {
+              tw.classList.add('typewriter-cursor');
+              typewrite(tw, tw.getAttribute('data-tw-full'), 0);
             }
           }
-        });
-      });
-      document.querySelectorAll('.slide').forEach(function (s) {
-        observer.observe(s, { attributes: true });
+        }
       });
     })();
   </script>

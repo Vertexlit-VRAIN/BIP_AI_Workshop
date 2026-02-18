@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prompt Wars — Part 1: AI or Human?</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../shared.css">
@@ -1067,7 +1068,6 @@
   </div>
 
   <script src="../shared-slides.js"></script>
-  <script>initDeck();</script>
 
   <script src="../shared.js"></script>
 
@@ -1078,43 +1078,59 @@
       var punch = document.querySelector('.big-question .punchline');
       if (!lead || !punch) return;
 
-      lead.setAttribute('data-tw-full', lead.textContent);
-      punch.setAttribute('data-tw-full', punch.textContent);
+      var lFull = lead.textContent;
+      var pFull = punch.textContent;
+      var twSlide = lead.closest('.slide');
+      var typing = false;
+      var twTimeout1 = null;
+      var twTimeout2 = null;
+
+      /* Clear text so it's ready for first visit */
       lead.textContent = '';
       punch.textContent = '';
 
       function typewrite(el, text, i, cb) {
         if (i > text.length) { el.classList.remove('typewriter-cursor'); if (cb) cb(); return; }
         el.textContent = text.slice(0, i);
-        setTimeout(function () { typewrite(el, text, i + 1, cb); }, 38);
+        twTimeout2 = setTimeout(function () { typewrite(el, text, i + 1, cb); }, 38);
       }
 
-      var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-          if (m.type === 'attributes' && m.attributeName === 'class') {
-            var slide = m.target;
-            if (slide.classList.contains('active') && slide.querySelector('.big-question')) {
-              var lFull = lead.getAttribute('data-tw-full');
-              var pFull = punch.getAttribute('data-tw-full');
-              if (lead.textContent !== lFull) {
-                lead.classList.add('typewriter-cursor');
-                typewrite(lead, lFull, 0, function () {
-                  /* update glitch data-text after typing finishes */
-                  lead.setAttribute('data-text', lFull);
-                  setTimeout(function () {
-                    punch.classList.add('typewriter-cursor');
-                    typewrite(punch, pFull, 0, function () {
-                      punch.setAttribute('data-text', pFull);
-                    });
-                  }, 400);
-                });
-              }
-            }
-          }
+      function startTyping() {
+        if (typing) return;
+        typing = true;
+        lead.textContent = '';
+        punch.textContent = '';
+        lead.classList.add('typewriter-cursor');
+        typewrite(lead, lFull, 0, function () {
+          lead.setAttribute('data-text', lFull);
+          twTimeout1 = setTimeout(function () {
+            punch.classList.add('typewriter-cursor');
+            typewrite(punch, pFull, 0, function () {
+              punch.setAttribute('data-text', pFull);
+            });
+          }, 400);
         });
-      });
-      document.querySelectorAll('.slide').forEach(function (s) {
-        observer.observe(s, { attributes: true });
+      }
+
+      function resetTyping() {
+        typing = false;
+        clearTimeout(twTimeout1);
+        clearTimeout(twTimeout2);
+        lead.classList.remove('typewriter-cursor');
+        punch.classList.remove('typewriter-cursor');
+        lead.textContent = '';
+        punch.textContent = '';
+      }
+
+      initDeck({
+        onSlideChange: function (oldIndex, newIndex) {
+          var newSlide = document.querySelectorAll('.slide')[newIndex];
+          if (newSlide === twSlide) {
+            startTyping();
+          } else if (typing) {
+            resetTyping();
+          }
+        }
       });
     })();
   </script>
