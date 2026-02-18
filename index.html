@@ -217,6 +217,7 @@
       flex-direction: column;
       gap: 2vh;
       width: 100%;
+      perspective: 800px;
     }
 
     .session-card {
@@ -231,13 +232,18 @@
       text-decoration: none;
       color: inherit;
       position: relative;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s ease;
       cursor: pointer;
+      transform-style: preserve-3d;
+      will-change: transform;
     }
 
     .session-card:hover {
       border-color: var(--neon-cyan);
-      box-shadow: 0 0 15px -3px var(--glow-cyan), inset 0 0 15px -8px var(--glow-cyan);
+      box-shadow:
+        0 0 15px -3px var(--glow-cyan),
+        inset 0 0 15px -8px var(--glow-cyan),
+        0 15px 35px -10px rgba(0, 0, 0, 0.4);
     }
 
     .card-num {
@@ -587,6 +593,23 @@
   <div class="pixel-ghost" aria-hidden="true"></div>
 
   <script src="shared.js"></script>
+  <script>
+    /* 3D tilt effect on session cards */
+    document.querySelectorAll('.session-card').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width;
+        var y = (e.clientY - rect.top) / rect.height;
+        var rotateY = (x - 0.5) * 16;  // -8 to +8 degrees
+        var rotateX = (0.5 - y) * 10;  // -5 to +5 degrees
+        card.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.02)';
+      });
+
+      card.addEventListener('mouseleave', function () {
+        card.style.transform = '';
+      });
+    });
+  </script>
 
 </body>
 
