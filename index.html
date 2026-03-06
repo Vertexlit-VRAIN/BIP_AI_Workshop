@@ -419,6 +419,59 @@
       }
     }
 
+    /* ========================
+       OBJECTIVES PANEL
+       ======================== */
+    .obj-panel {
+      width: 100%;
+      background: var(--bg-card);
+      border: 2px solid var(--border-pixel);
+      border-radius: 4px;
+      padding: clamp(1.4rem, 3vw, 2rem) clamp(1.4rem, 3vw, 2.2rem);
+      margin-bottom: 1vh;
+    }
+
+    .obj-panel-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.44rem, 0.75vw, 0.58rem);
+      color: var(--text-primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1.8vh;
+    }
+
+    .obj-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1vh;
+    }
+
+    .obj-item {
+      display: grid;
+      grid-template-columns: 2em 1fr;
+      align-items: start;
+      gap: 0.8em;
+    }
+
+    .obj-num {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+      color: var(--neon-cyan);
+      text-shadow: 0 0 6px var(--glow-cyan);
+      padding-top: 0.15em;
+    }
+
+    .obj-text {
+      font-size: clamp(0.8rem, 1.05vw, 0.9rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .obj-text strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
     /* Pixel effects, vignette, glitch, reduced-motion: see shared.css */
 
     /* Pixel art space invader */
@@ -512,6 +565,27 @@
       <div class="main-title">PROMPT WARS</div>
       <div class="tagline">Detect it. Direct it. Break it.</div>
       <div class="coin-insert">SELECT MISSION TO BEGIN</div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ======================== OBJECTIVES PANEL ======================== -->
+    <div class="obj-panel">
+      <div class="obj-panel-title">// Learning Objectives</div>
+      <div class="obj-list">
+        <div class="obj-item">
+          <span class="obj-num">01</span>
+          <span class="obj-text"><strong>Detect</strong> &mdash; Identify AI-generated content across text, images, and code.</span>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">02</span>
+          <span class="obj-text"><strong>Direct</strong> &mdash; Write specific prompts that guide AI toward more useful, accurate outputs.</span>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">03</span>
+          <span class="obj-text"><strong>Break</strong> &mdash; Recognize when AI fails and understand why domain expertise is what catches those failures.</span>
+        </div>
+      </div>
     </div>
 
     <hr class="divider">
