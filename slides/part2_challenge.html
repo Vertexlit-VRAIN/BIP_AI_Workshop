@@ -48,8 +48,13 @@
     }
 
     @keyframes bg-drift {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      100% { transform: translate(-4%, 2%) rotate(2deg); }
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-4%, 2%) rotate(2deg);
+      }
     }
 
     /* Part 2-specific typography */
@@ -428,23 +433,41 @@
 
     /* RESPONSIVE (Part 2-specific) */
     @media (max-width: 1024px) {
-      .cols-2, .cols-3 { gap: 1.5vw; }
+
+      .cols-2,
+      .cols-3 {
+        gap: 1.5vw;
+      }
     }
 
     @media (max-width: 768px) {
-      .cols-2, .cols-3 { grid-template-columns: 1fr; gap: 1.5vh; }
-      .role-table { font-size: 0.82rem; }
-      .timer-display { font-size: clamp(3rem, 10vw, 5rem); }
+
+      .cols-2,
+      .cols-3 {
+        grid-template-columns: 1fr;
+        gap: 1.5vh;
+      }
+
+      .role-table {
+        font-size: 0.82rem;
+      }
+
+      .timer-display {
+        font-size: clamp(3rem, 10vw, 5rem);
+      }
     }
 
     @media (max-width: 480px) {
-      .timer-display { font-size: 3rem; }
+      .timer-display {
+        font-size: 3rem;
+      }
     }
 
     @media (max-height: 580px) {
-      .timer-display { font-size: clamp(3rem, 8vw, 5rem); }
+      .timer-display {
+        font-size: clamp(3rem, 8vw, 5rem);
+      }
     }
-
   </style>
 </head>
 
@@ -483,8 +506,11 @@
         </div>
       </div>
       <p style="text-align:center; margin-top:2.5vh;">
-        <span style="display:block; font-family:var(--font-pixel); font-size:clamp(0.38rem,0.6vw,0.48rem); color:rgba(255,255,255,0.35); letter-spacing:0.1em; margin-bottom:0.6vh;">📄 Student Handout</span>
-        <span style="font-family:var(--font-pixel); font-size:clamp(0.6rem,1.1vw,0.85rem); color:var(--neon-cyan); text-shadow:0 0 8px var(--glow-cyan); letter-spacing:0.04em;">tinyurl.com/bip-handout</span>
+        <span
+          style="display:block; font-family:var(--font-pixel); font-size:clamp(0.38rem,0.6vw,0.48rem); color:rgba(255,255,255,0.35); letter-spacing:0.1em; margin-bottom:0.6vh;">📄
+          Student Handout</span>
+        <span
+          style="font-family:var(--font-pixel); font-size:clamp(0.6rem,1.1vw,0.85rem); color:var(--neon-cyan); text-shadow:0 0 8px var(--glow-cyan); letter-spacing:0.04em;">https://tinyurl.com/bip-handout</span>
       </p>
     </div>
 
@@ -683,7 +709,9 @@
         <p class="small" style="color:var(--text-primary); margin-bottom:0.6em;">Screenshot your best "break" and upload
           it to the Padlet wall:</p>
         <p style="margin-top:0.6em;">
-          <span style="display:block; font-family:var(--font-pixel); font-size:clamp(0.38rem,0.6vw,0.48rem); color:rgba(255,255,255,0.35); letter-spacing:0.1em; margin-bottom:0.6vh;">🖼️ Padlet Wall</span>
+          <span
+            style="display:block; font-family:var(--font-pixel); font-size:clamp(0.38rem,0.6vw,0.48rem); color:rgba(255,255,255,0.35); letter-spacing:0.1em; margin-bottom:0.6vh;">🖼️
+            Padlet Wall</span>
           <a href="https://tinyurl.com/bip-ai-work-pad" target="_blank"
             style="font-family:var(--font-pixel); font-size:clamp(0.6rem,1.1vw,0.85rem); letter-spacing:0.04em; color:var(--neon-cyan); text-decoration:none; text-shadow:0 0 8px var(--glow-cyan);">tinyurl.com/bip-ai-work-pad</a>
         </p>
