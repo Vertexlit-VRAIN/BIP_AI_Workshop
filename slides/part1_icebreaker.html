@@ -915,45 +915,38 @@
         <div class="option-card opt-a">
           <div class="option-header">Option A</div>
           <div class="option-text code-text"><span class="kw">def</span> <span class="fn">is_prime</span>(n):
-            <span class="kw">if</span> n &lt; <span class="num">2</span>:
+    <span class="kw">if</span> n &lt; <span class="num">2</span>:
+        <span class="kw">return</span> <span class="num">False</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">2</span>, <span class="fn">int</span>(n ** <span class="num">0.5</span>) + <span class="num">1</span>):
+        <span class="kw">if</span> n % i == <span class="num">0</span>:
             <span class="kw">return</span> <span class="num">False</span>
-            <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span
-              class="num">2</span>, <span class="fn">int</span>(n ** <span class="num">0.5</span>) + <span
-              class="num">1</span>):
-            <span class="kw">if</span> n % i == <span class="num">0</span>:
-            <span class="kw">return</span> <span class="num">False</span>
-            <span class="kw">return</span> <span class="num">True</span>
-          </div>
+    <span class="kw">return</span> <span class="num">True</span></div>
         </div>
         <div class="option-card opt-b">
           <div class="option-header">Option B</div>
-          <div class="option-text code-text"><span class="kw">def</span> <span class="fn">is_prime</span>(number: <span
-              class="type">int</span>) -&gt; <span class="type">bool</span>:
-            <span class="str">"""
-              Determine whether a given integer is a prime number.
+          <div class="option-text code-text"><span class="kw">def</span> <span class="fn">is_prime</span>(number: <span class="type">int</span>) -&gt; <span class="type">bool</span>:
+    <span class="str">"""
+    Determine whether a given integer is a prime number.
 
-              A prime number is a natural number greater than 1.
-              It has no positive divisors other than 1 and itself.
+    A prime number is a natural number greater than 1.
+    It has no positive divisors other than 1 and itself.
 
-              Args:
-              number: The integer to check for primality.
+    Args:
+        number: The integer to check for primality.
 
-              Returns:
-              True if the number is prime, False otherwise.
-              """</span>
-            <span class="kw">if</span> number &lt; <span class="num">2</span>:
+    Returns:
+        True if the number is prime, False otherwise.
+    """</span>
+    <span class="kw">if</span> number &lt; <span class="num">2</span>:
+        <span class="kw">return</span> <span class="num">False</span>
+    <span class="kw">if</span> number == <span class="num">2</span>:
+        <span class="kw">return</span> <span class="num">True</span>
+    <span class="kw">if</span> number % <span class="num">2</span> == <span class="num">0</span>:
+        <span class="kw">return</span> <span class="num">False</span>
+    <span class="kw">for</span> divisor <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>, <span class="fn">int</span>(number ** <span class="num">0.5</span>) + <span class="num">1</span>, <span class="num">2</span>):
+        <span class="kw">if</span> number % divisor == <span class="num">0</span>:
             <span class="kw">return</span> <span class="num">False</span>
-            <span class="kw">if</span> number == <span class="num">2</span>:
-            <span class="kw">return</span> <span class="num">True</span>
-            <span class="kw">if</span> number % <span class="num">2</span> == <span class="num">0</span>:
-            <span class="kw">return</span> <span class="num">False</span>
-            <span class="kw">for</span> divisor <span class="kw">in</span> <span class="fn">range</span>(<span
-              class="num">3</span>, <span class="fn">int</span>(number ** <span class="num">0.5</span>) + <span
-              class="num">1</span>, <span class="num">2</span>):
-            <span class="kw">if</span> number % divisor == <span class="num">0</span>:
-            <span class="kw">return</span> <span class="num">False</span>
-            <span class="kw">return</span> <span class="num">True</span>
-          </div>
+    <span class="kw">return</span> <span class="num">True</span></div>
         </div>
       </div>
       <div class="vote-banner">VOTE NOW on Mentimeter: Which one is AI?</div>
