@@ -34,16 +34,22 @@
     el.setAttribute('data-text', el.textContent);
   });
 
-  /* Theme toggle: press T to switch dark/light */
+  /* Theme toggle: press T to switch dark/light, persisted via localStorage */
   var hint = document.createElement('div');
   hint.className = 'theme-toggle-hint';
   hint.textContent = 'Press T: toggle theme';
   document.body.appendChild(hint);
 
+  /* Apply saved theme on load */
+  if (localStorage.getItem('pw-theme') === 'light') {
+    document.body.classList.add('light-theme');
+  }
+
   document.addEventListener('keydown', function (e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key === 't' || e.key === 'T') {
       document.body.classList.toggle('light-theme');
+      localStorage.setItem('pw-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
     }
   });
 })();
