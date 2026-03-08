@@ -230,13 +230,13 @@ body.light-theme {
   --text-secondary: #4a4a6a;
   --neon-cyan: #0077aa;
   --neon-magenta: #bb00bb;
-  --neon-yellow: #aa8800;
+  --neon-yellow: #7a6200;
   --neon-green: #1a9e0a;
   --neon-orange: #cc6600;
   --neon-red: #cc2222;
   --glow-cyan: rgba(0, 119, 170, 0.15);
   --glow-magenta: rgba(187, 0, 187, 0.12);
-  --glow-yellow: rgba(170, 136, 0, 0.12);
+  --glow-yellow: rgba(122, 98, 0, 0.12);
 }
 
 /* Hide CRT effects in light mode */
@@ -257,7 +257,84 @@ body.light-theme .glitch-text::after {
 
 /* Soften background glow spots in light mode */
 body.light-theme .bg-layer {
-  opacity: 0.4;
+  opacity: 0.3;
+}
+
+/* Nav bar: override hardcoded dark background */
+body.light-theme .nav-bar {
+  background: rgba(215, 215, 235, 0.97);
+  border-top-color: #c0c0d8;
+}
+
+body.light-theme .nav-bar .nav-hint {
+  color: rgba(0, 0, 40, 0.25);
+}
+
+body.light-theme .nav-bar .home-link:hover {
+  text-shadow: none;
+}
+
+/* Presenter notes: override hardcoded white rgba in per-page styles */
+body.light-theme .presenter-note {
+  color: rgba(0, 0, 40, 0.3) !important;
+}
+
+/* Hub footer: override hardcoded white rgba */
+body.light-theme .footer {
+  color: rgba(0, 0, 40, 0.3) !important;
+}
+
+/* Card accent borders: override hardcoded neon rgba in hub session cards */
+body.light-theme .card-num-1 {
+  background: rgba(0, 119, 170, 0.07) !important;
+  border-color: rgba(0, 119, 170, 0.35) !important;
+}
+
+body.light-theme .card-num-2 {
+  background: rgba(204, 102, 0, 0.07) !important;
+  border-color: rgba(204, 102, 0, 0.35) !important;
+}
+
+body.light-theme .card-num-3 {
+  background: rgba(187, 0, 187, 0.07) !important;
+  border-color: rgba(187, 0, 187, 0.35) !important;
+}
+
+/* Takeaway number badges: override hardcoded box-shadow */
+body.light-theme .takeaway-card:nth-child(1) .takeaway-num {
+  box-shadow: 0 0 8px rgba(0, 119, 170, 0.3) !important;
+}
+
+body.light-theme .takeaway-card:nth-child(2) .takeaway-num {
+  box-shadow: 0 0 8px rgba(187, 0, 187, 0.25) !important;
+}
+
+body.light-theme .takeaway-card:nth-child(3) .takeaway-num {
+  box-shadow: 0 0 8px rgba(26, 158, 10, 0.25) !important;
+}
+
+/* Progress bar: keep readable */
+body.light-theme .progress-bar {
+  box-shadow: 0 0 6px rgba(0, 119, 170, 0.3);
+}
+
+/* Back-to-hub button hover: override hardcoded neon rgba */
+body.light-theme .back-to-hub:hover {
+  background: rgba(0, 119, 170, 0.08) !important;
+  box-shadow: 0 0 14px rgba(0, 119, 170, 0.2), inset 0 0 10px rgba(0, 119, 170, 0.05) !important;
+}
+
+/* Reduce intense text-shadow on main title elements */
+body.light-theme .big-title,
+body.light-theme .final-title,
+body.light-theme .slide h1 {
+  text-shadow: 0 0 8px var(--glow-cyan) !important;
+}
+
+body.light-theme .poll-question,
+body.light-theme .mic-prompt,
+body.light-theme .scoreboard-prompt {
+  text-shadow: 0 0 6px var(--glow-yellow) !important;
 }
 
 /* Theme toggle hint (bottom-right) */
