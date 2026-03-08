@@ -56,6 +56,64 @@
   /* CRT page transition */
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Synthesise a CRT power-off or power-on whine + static using Web Audio */
+  function playCRTSound(direction) {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var dur = direction === 'off' ? 0.42 : 0.52;
+      var t = ctx.currentTime;
+
+      /* --- Oscillator: the frequency whine --- */
+      var osc = ctx.createOscillator();
+      var oscGain = ctx.createGain();
+      osc.connect(oscGain);
+      oscGain.connect(ctx.destination);
+
+      /* --- White noise buffer: the static crackle --- */
+      var bufLen = Math.ceil(ctx.sampleRate * dur);
+      var noiseBuf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      var nd = noiseBuf.getChannelData(0);
+      for (var i = 0; i < bufLen; i++) nd[i] = Math.random() * 2 - 1;
+      var noise = ctx.createBufferSource();
+      noise.buffer = noiseBuf;
+
+      /* Bandpass filter shapes the noise toward a harsh CRT hiss */
+      var noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 4000;
+      noiseFilter.Q.value = 0.4;
+      var noiseGain = ctx.createGain();
+      noise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+
+      if (direction === 'off') {
+        osc.frequency.setValueAtTime(900, t);
+        osc.frequency.exponentialRampToValueAtTime(55, t + 0.32);
+        oscGain.gain.setValueAtTime(0.11, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        noiseGain.gain.setValueAtTime(0.18, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      } else {
+        osc.frequency.setValueAtTime(55, t);
+        osc.frequency.exponentialRampToValueAtTime(900, t + 0.28);
+        oscGain.gain.setValueAtTime(0.001, t);
+        oscGain.gain.linearRampToValueAtTime(0.11, t + 0.08);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        /* Noise bursts loudest at the very start, then dies away */
+        noiseGain.gain.setValueAtTime(0.001, t);
+        noiseGain.gain.linearRampToValueAtTime(0.22, t + 0.05);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.55);
+      }
+
+      osc.start(t);   osc.stop(t + dur);
+      noise.start(t); noise.stop(t + dur);
+      setTimeout(function () { ctx.close(); }, (dur + 0.1) * 1000);
+    } catch (_) {}
+  }
+
   /* Returns the Y pixel position, within the document, of the visible viewport centre */
   function viewportCentreY() {
     return window.scrollY + window.innerHeight / 2;
@@ -63,6 +121,7 @@
 
   /* Enter: power-on animation on every page load */
   if (!reducedMotion) {
+    playCRTSound('on');
     document.body.style.transformOrigin = 'center ' + viewportCentreY() + 'px';
     document.body.classList.add('crt-enter');
     document.body.addEventListener('animationend', function onEnterDone(e) {
@@ -86,6 +145,7 @@
       if (new URL(dest).origin !== location.origin) return;
     } catch (_) { return; }
     e.preventDefault();
+    playCRTSound('off');
     document.body.classList.remove('crt-enter');
     document.body.style.transformOrigin = 'center ' + viewportCentreY() + 'px';
     document.body.classList.add('crt-exit');
