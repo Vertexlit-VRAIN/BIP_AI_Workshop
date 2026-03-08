@@ -639,6 +639,36 @@ body.light-theme .scoreboard-prompt {
 }
 
 /* ===========================
+   CRT PAGE TRANSITION
+   =========================== */
+@keyframes crt-power-off {
+  0%   { transform: scaleY(1);     filter: brightness(1)  saturate(1); }
+  50%  { transform: scaleY(0.05);  filter: brightness(2)  saturate(1.4); }
+  75%  { transform: scaleY(0.008); filter: brightness(9)  saturate(0.3); }
+  88%  { transform: scaleY(0.004); filter: brightness(16) saturate(0); }
+  100% { transform: scaleY(0);     filter: brightness(0)  saturate(0); }
+}
+
+@keyframes crt-power-on {
+  0%   { transform: scaleY(0);     filter: brightness(0)  saturate(0); }
+  12%  { transform: scaleY(0.004); filter: brightness(16) saturate(0); }
+  28%  { transform: scaleY(0.008); filter: brightness(9)  saturate(0.3); }
+  55%  { transform: scaleY(0.05);  filter: brightness(2)  saturate(1.2); }
+  100% { transform: scaleY(1);     filter: brightness(1)  saturate(1); }
+}
+
+body.crt-exit {
+  animation: crt-power-off 0.42s ease-in forwards;
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+body.crt-enter {
+  animation: crt-power-on 0.52s ease-out both;
+  transform-origin: center center;
+}
+
+/* ===========================
    REDUCED MOTION
    =========================== */
 @media (prefers-reduced-motion: reduce) {
